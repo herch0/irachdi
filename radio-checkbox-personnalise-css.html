@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer des radio et checkbox personnalisés avec CSS</title>
+    <link href="css/prism.css" rel="stylesheet">
+    <link href="css/styles.css?v=3" rel="stylesheet">
+    <link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="header_top">
+      <h1><a href="index.html">I. RACHDI</a></h1>
+    </header>
+    <div class="container">
+      <main>
+        <article class="article_post" itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="page-header">
+            <h1>
+              <span itemprop="name">Créer des radio et checkbox personnalisés avec CSS</span>
+              <time itemprop="datePublished" class="post_date" datetime="2015-09-06T12:40">6 Septembre 2015</time>
+            </h1>
+          </header>
+          <div itemprop="articleBody" class="post_body">
+            <p>Les navigateurs n'offrent aucune possibilité pour styler les radios et les checkbox, le seul moyen qui existe pour personnaliser ces éléments et de les cacher carrément, et utiliser un autre élément que nous personnalisons à notre aise (un span par exemple).</p>
+            <p>D'abord, commençons par cacher nos radios/checkbox. Et On changera aussi le curseur pour les labels pour montrer qu'ils sont cliquables.</p>
+            <pre><code class="language-css">input[type=radio], input[type=checkbox] {
+  display: none;
+}
+label {
+  cursor: pointer;
+  font-size: 1.2em;
+}</code></pre>
+            <h2>Personnaliser un élément radio</h2>
+            <p>Commençons par le code html </p>
+            <pre><code class='language-markup'>
+&lt;input type='radio' name='humeur' id='bonne'&gt;
+&lt;label for='bonne'&gt;&lt;span class='radio_perso'&gt;&lt;/span&gt; De bonne humeur&lt;/label&gt;&lt;br&gt;
+&lt;input type='radio' name='humeur' id='mauvaise'&gt;
+&lt;label for='mauvaise'&gt;&lt;span class='radio_perso'&gt;&lt;/span&gt; De mauvaise humeur&lt;/label&gt;&lt;br&gt;
+</code></pre>
+            <p>Il est important de mettre le for dans le label pour que notre radio soit coché quand on clique sur le label.</p>
+            <p>Maintenant passons au CSS.</p>
+            <p>On fixe la hauteur et la largeur de nos span, on leur ajoute une bordure, et puis pour les arrondir, et fixe la valeur de la propriété border-radius à 50%</p>
+            <pre><code class='language-css'>.radio_perso {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}</code></pre>
+            <p>Maintenant, il nous faudra changer la couleur de nos spans quand la radio correspondante est cochée, pour cela, on utilisera la pseudo-class <code class="language-css">:checked</code> pour ensuite sélectionner le span qui est à côté de la radio coché.</p>
+            <pre><code class='language-css'>
+input[type=radio]:checked + label span {
+  background-color: blue;
+}
+</code></pre>
+            <p>Le <code class='language-css'>+</code> ici signifie qu'on veut sélectionner l'élément label qui est au même niveau que la radio et qui vient juste après.</p>
+            <p><a href='demos/radio-checkbox-personnalise1.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a></p>
+            <h2>Personnaliser un élément checkbox</h2>
+            <p>Pour les checkbox, c'est le même principe, il faudra juste enlever la propriété border-radius, puisque les checkbox sont généralement carré.</p>
+            <p>CSS</p>
+            <pre><code class='language-css'>.check_perso {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  display: inline-block;
+  vertical-align: middle;
+}
+input[type=checkbox]:checked + label span {
+  background-color: blue;
+}</code></pre>
+            <p>HTML</p>
+            <pre><code class='language-markup'>&lt;input type='checkbox' id='pain'&gt;
+&lt;label for='pain'&gt;&lt;span class='check_perso'&gt;&lt;/span&gt; Pain&lt;/label&gt;&lt;br&gt;
+&lt;input type='checkbox' id='the'&gt;
+&lt;label for='the'&gt;&lt;span class='check_perso'&gt;&lt;/span&gt; Th&eacute;&lt;/label&gt;&lt;br&gt;
+&lt;input type='checkbox' id='cafe'&gt;
+&lt;label for='cafe'&gt;&lt;span class='check_perso'&gt;&lt;/span&gt; Caf&eacute;&lt;/label&gt;&lt;br&gt;
+&lt;input type='checkbox' id='confiture'&gt;
+&lt;label for='confiture'&gt;&lt;span class='check_perso'&gt;&lt;/span&gt; Confiture&lt;/label&gt;&lt;br&gt;
+&lt;input type='checkbox' id='croissant'&gt;
+&lt;label for='croissant'&gt;&lt;span class='check_perso'&gt;&lt;/span&gt; Croissant&lt;/label&gt;&lt;br&gt;</code></pre>
+            <p><a href='demos/radio-checkbox-personnalise2.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a></p>
+            <p>Dans l'exemple précédent, on change la couleur de l'arrière plan pour indiquer que la checkbox est coché, mais on pourrait aussi mettre une croix par exemple à l'intérieur de la case. Pour cela, on devra utiliser le pseudo élément <code class="language-css">::before</code> pour insérer du contenu dans notre span</p>
+            <pre><code class='language-css'>input[type=checkbox]:checked + label span::before {
+  content: '×';
+  color: blue;
+}</code></pre>
+            <p><a href='demos/radio-checkbox-personnalise3.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a></p>
+            <h2>Dernière touche: transition</h2>
+            <p>Quand on coche notre radio, le changement de l'arrière se fait de façon abrupte. Ceci n'est pas un problèmre en soi, mais quand on peut rendre les choses plus fluide, pourquoi s'en priver. Les transitions nous permettent justement de contrôler la façon dont les propriétés CSS changent. Dans notre cas par exemple, on veut que le changement de la propriété <code class='language-css'>background-color</code> se fasse de façon fluide, sur une seconde par exemple.</p>
+            <p>La syntaxe pour faire ceci est plutôt simple.</p>
+            <pre><code class='language-css'>transition: background-color 1s ease;</code></pre>
+            <p>On met ce bout de code dans l'élément dont la proprété <code>background-color</code> va changer. Dans notre cas, on mettra ce code dans le sélecteur <code class='language-css'>.radio_perso</code>, et c'est tout. Maintenant, si on change l'arrière plan, comme on le fait quand la radio est coché, le changement se fera d'une façon fluide sur une seconde</p>
+            <p><a href='demos/radio-checkbox-personnalise4.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a></p>
+          </div>
+        </article>
+      </main>
+      <div class="clearfix"></div>
+    </div>
+    <script src="js/prism.js"></script>
+  </body>
+</html>

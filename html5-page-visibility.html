@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L&#039;API Page Visibility</title>
+    <link href="css/prism.css" rel="stylesheet">
+    <link href="css/styles.css?v=3" rel="stylesheet">
+    <link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="header_top">
+      <h1><a href="index.html">I. RACHDI</a></h1>
+    </header>
+    <div class="container">
+      <main>
+        <article class="article_post" itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="page-header">
+            <h1>
+              <span itemprop="name">L&#039;API Page Visibility</span>
+              <time itemprop="datePublished" class="post_date" datetime="2015-03-19T10:21">19 mars 2015</time>
+            </h1>
+          </header>
+          <div itemprop="articleBody" class="post_body"><p>Parmi les choses intéressantes que l'HTML5 introduit, l'API Page Visibility. Cette API vous permets de détecter quand votre page n'est plus visible (l'utilisateur a réduit le navigateur, où a changé d'onglet).  Ceci est très utile au cas où par exemple votre page fait des requêtes AJAX toutes les secondes, car elle permet de ne pas bombarder votre serveur de requêtes alors que l'utilisateur consulte une autre page. Cela permet aussi d'éviter de détériorer les performances du navigateur, car un script qui lance des requêtes toutes les secondes va à la longue surcharger le navigateur et le rendre moins réactif.</p>
+            <h3>Détecter l'état de la page</h3>
+            <p>Quand la visibilité de la page change, le navigateur envoie un événement <code>visibilitychange</code>. On va donc attraper l'événement, et simplement afficher l'état actuel dans un div.</p>
+            <pre><code class="language-javascript">window.onload = function() {
+  document.addEventListener('visibilitychange', function() {
+    var visible = !document.hidden;
+    var div_etat = document.getElementById('etat_page');
+    div_etat.innerHTML += '<br /> L'état est ' + (visible ? 'visible' : 'caché');
+  }, false);
+}</code></pre>
+
+            <p>On peut déterminer si la page est visible où non avec la propriété <code>document.hidden</code> qui vaut true si la page n'es pas visible, sinon false.</p>
+
+            <p>Voici le code de la page entière</p>
+
+            <pre><code class="language-markup">
+&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Page Visibility API&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;p&gt;Un contenu quelconque&lt;/p&gt;
+    &lt;div id="etat_page"&gt;&lt;/div&gt;
+    &lt;script&gt;
+      window.onload = function () {
+        document.addEventListener('visibilitychange', function (event) {
+          var visible = !document.hidden;		
+          var div_etat = document.getElementById('etat_page');
+          div_etat.innerHTML += "&lt;br&gt; L'état est " + (visible ? 'visible' : 'caché');
+        }, false);
+      };
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+
+            <h3>Exemple: Lire et arrêter un fichier audio selon la visibilité de la page</h3>
+
+            <p>Dans cet exemple, on va ajouter un élément audio à notre page, et on va le lire quand la page est visible, et l'arrêter quand elle est cachée.</p>
+
+            <code class="language-markup">&lt;audio src="audio.ogg" id="fichier_audio" controls autoplay&gt;&lt;/audio&gt;</code>
+
+            <p>L'élément audio lira le fichier audio <code>audio.ogg</code>, vous pouvez le remplacer avec un autre fichier, veillez juste à mettre le nom exact du fichier. L'attribut <code>controls</code> affiche le lecteur du navigateur, et <code>autoplay</code> demande au navigateur de lire le fichier aussitôt qu'il est chargé.</p>
+
+            <p>L'élément audio (<code>HTMLAudioElement</code>) contient les méthodes <code>play()</code> et <code>pause()</code> qu'on va utiliser dans notre exemple.</p>
+
+            <pre><code class="language-javascript">window.onload = function () {
+  document.addEventListener('visibilitychange', function (event) {
+    var audioElement = document.getElementById('fichier_audio');
+    if (document.hidden) {  //la page est caché
+      audioElement.pause(); //mettre la lecture en pause
+    } else {
+      audioElement.play(); //reprendre la lecture
+    }
+  }, false);
+};</code></pre>
+
+            <p>Et voici la page complète <a href="demos/html5-page-visibility.html" target="_blank">
+                <i class="fa fa-eye"></i> Voir demo</a>
+            </p>
+
+            <pre><code class="language-markup">&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Page Visibility API&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;audio src="audio.ogg" id="fichier_audio" controls autoplay&gt;&lt;/audio&gt;
+    &lt;script&gt;
+      window.onload = function () {
+        document.addEventListener('visibilitychange', function (event) {
+          var audioElement = document.getElementById('fichier_audio');
+          if (document.hidden) {  //la page est caché
+            audioElement.pause(); //mettre la lecture en pause
+          } else {
+            audioElement.play(); //reprendre la lecture
+          }
+        }, false);
+      };
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+          </div>
+        </article>
+      </main>
+      <div class="clearfix"></div>
+    </div>
+    <script src="js/prism.js"></script>
+  </body>
+</html>

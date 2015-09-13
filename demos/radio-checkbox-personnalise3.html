@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Radio / Checkbox personnalisé</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      input[type=radio], input[type=checkbox] {
+        display: none;
+      }
+      label {
+        cursor: pointer;
+        font-size: 1.2em;
+      }
+      .check_perso {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ccc;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        font-weight: bold;
+      }
+      input[type=checkbox]:checked + label span::before {
+        content: '×';
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    Que prenez-vous au petit déjeuner?<br><br>
+    <input type='checkbox' id='pain'>
+    <label for='pain'><span class='check_perso'></span> Pain</label><br>
+    <input type='checkbox' id='the'>
+    <label for='the'><span class='check_perso'></span> Thé</label><br>
+    <input type='checkbox' id='cafe'>
+    <label for='cafe'><span class='check_perso'></span> Café</label><br>
+    <input type='checkbox' id='confiture'>
+    <label for='confiture'><span class='check_perso'></span> Confiture</label><br>
+    <input type='checkbox' id='croissant'>
+    <label for='croissant'><span class='check_perso'></span> Croissant</label><br>
+  </body>
+</html>

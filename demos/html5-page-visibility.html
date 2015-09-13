@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Page Visibility API</title>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <audio src="audio.ogg" id="fichier_audio" controls autoplay></audio>
+    <script>
+      window.onload = function () {
+        document.addEventListener('visibilitychange', function (event) {
+          var audioElement = document.getElementById('fichier_audio');
+          if (document.hidden) {  //la page est caché
+            audioElement.pause(); //mettre la lecture en pause
+          } else {
+            audioElement.play(); //reprendre la lecture
+          }
+        }, false);
+      };
+    </script>
+  </body>
+</html>
