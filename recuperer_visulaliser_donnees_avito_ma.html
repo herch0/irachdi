@@ -9,6 +9,18 @@
       .chart {
         border: 1px solid #ccc;
       }
+      .chart rect {
+        fill: steelblue;
+      }
+      .chart text {
+        fill: white;
+        font: 10px sans-serif;
+        text-anchor: end;
+      }
+      body, #barchart {
+        padding: 0;
+        margin: 0;
+      }
     </style>
   </head>
   <body>
@@ -19,10 +31,13 @@
     <script>
       var moyenne_total = 13811.404446284374;
 
-      var chart_width = 500, bar_height = 20;
-      var x_scale = d3.scale.linear().range([0, chart_width]);
+      var chart_width = 960, chart_height = 500;
+      var y_scale = d3.scale.linear().range([chart_height, 0]);
 
-      var chart = d3.select('.chart').attr('width', chart_width);
+      var chart = d3.select('.chart')
+              .attr('width', chart_width)
+              .attr('height', chart_height);
+
       d3.text("data/prix_par_metre_casa.csv", "text/csv", function (error, content) {
         var dsv = d3.dsv(";", "text/csv");
         var data = dsv.parseRows(content, function (d) {
@@ -30,29 +45,31 @@
           d[2] = +d[2];
           return d;
         });
-        x_scale.domain([0, d3.max(function (d) {
+        y_scale.domain([0, d3.max(data, function (d) {
             return d[1];
           })]);
+        var bar_width = chart_width / data.length;
 
-        chart.attr('height', data.length * bar_height);
-
-        var bars = d3.selectAll('g')
+        var bars = chart.selectAll('g')
                 .data(data)
                 .enter().append('g')
                 .attr('transform', function (d, i) {
-                  return 'translate(0, ' + (i * bar_height) + ')';
+                  return 'translate(' + (i * bar_width) + ', 0)';
                 });
         bars.append('rect')
-                .attr('width', function (d) {
-                  return x_scale(d[1]);
+                .attr('y', function (d) {
+                  return y_scale(d[1]);
                 })
-                .attr('height', bar_height - 1);
+                .attr('height', function (d) {
+                  return chart_height - y_scale(d[1]);
+                })
+                .attr('width', bar_width - 1);
         bars.append('text')
-                .attr('x', function (d) {
-                  return x_scale(d) - 3;
+                .attr('x', bar_width / 2)
+                .attr('y', function (d) {
+                  return y_scale(d[1]) - 3;
                 })
-                .attr('y', bar_height / 2)
-                .attr('dy', '.35em')
+                .attr('dy', '.75em')
                 .text(function (d) {
                   return d[0];
                 });
