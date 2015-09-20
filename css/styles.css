@@ -714,6 +714,9 @@ a.danger:hover {
   margin-bottom: 18px;
   font-family: robotoregular;
 }
+.container ul {
+  font-family: robotoregular;
+}
 
 .lire_suite {
   font-size: .9rem!important;
