@@ -85,16 +85,34 @@
               <li>o: numéro de la page dans les résultat de la recherche.</li>
             </ul>
             <p>
-              Dans un premier temps, on va faire une recherche sur les appartements à vendre à casablanca, et récupérer la première page. Dans l'interpréteur python, on va entrer les instructions suivantes
+              Dans un premier temps, on va faire une recherche sur les appartements à vendre à casablanca, et récupérer la première page. Dans l'interpréteur python, on va entrer les instructions suivantes:
             </p>
-            <pre><code class="language-python">>>> import requests
+            <pre><code class="language-python">>>>import requests
 
->>> url = "http://www.avito.ma/fr/maroc/?ca=15&q=&cg=1010&w=1005&st=s&m=&m=&spr=&mpr=&o=1"
->>> r = requests.get(url, allow_redirects=False)</code>
-            </pre>
+>>>url = "http://www.avito.ma/fr/maroc/?ca=15&q=&cg=1010&w=1005&st=s&m=&m=&spr=&mpr=&o=1"
+>>>r = requests.get(url, allow_redirects=False)</code></pre>
             <p>
-              
+              On peut après récupérer la page HTML retournée avec la propriété text de l'objet retourné:
             </p>
+            <pre><code class="language-python">>>>print(r.text)</code></pre>
+
+            <h2>Extraction des données</h2>
+            <p>Dans le texte qu'on a récupéré plus tôt, on a une liste d'appartements, et chaque élément de la liste contient un lien HTML qui pointe vers une page où on trouvera les détails de l'annonce. Ce qu'il nous faut maintenant c'est un moyen de récupérer l'url de chaque annonce.</p>
+            <p>Pour ceci, on va utiliser le module <a href="https://pypi.python.org/pypi/beautifulsoup4">beautifulsoup4</a>. Ce module nous fournit un parser HTML/XML, et permets de rechercher facilement dans l'arbre HTML. Pour utiliser ce module, après l'avoir importé, il faut lui passer le code HTML qu'on peut parcourir.</p>
+            
+            <pre><code class="language-python">>>>from bs4 import BeautifulSoup as bs4
+
+>>>html = bs4(r.text, 'html.parser')</code></pre>
+            
+            <p>L'objet récupéré nous permetra de sélectionner les éléments qui nous intéressent en utilisant des sélecteurs CSS. Dans notre cas on veut récupérer les liens des annonces. Si on examine le code HTML qu'on a récupéré plus haut, on remarquera que le cadre qui contient les annonces est un élément "div", qui a les classes suivantes "panel-main no-border-radius". Le lien des détails de l'annonce est un élémént "a", a comme parent un élément h2, qui a lui même comma parent un élément div qui a les classes "item-info ctext1 mls".</p>
+            <p>Le module beautifulsoup nous facilite grandement la tâche pour récupérer les liens des annonces, il nous suffit de lui spécifier le sélecteur suivant ".panel-main.no-border-radius .item-info.ctext1.mls h2 a".</p>
+            
+            <pre><code class="language-python">>>>liens = html.select('.panel-main.no-border-radius .item-info.ctext1.mls h2 a')</code></pre>
+            
+            <p>La méthode select retourne la liste des éléments qui sont identifiés par le sélecteur passé en argument. On peut ainsi boucler sur cette liste, et récupérer l'attribut href de chaque lien récupéré.</p>
+            <pre><code class="language-python">>>>for lien in liens:
+...  print(lien['href'])</code></pre>
+            
             <div id='barchart'>
               <svg class='chart'></svg>
             </div>
