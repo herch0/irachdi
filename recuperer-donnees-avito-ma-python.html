@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Récupérer les données d'avito.ma avec Python</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/prism.css?v=3" rel="stylesheet">
+    <link href="css/styles.css?v=3" rel="stylesheet">
+    <!--<link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">-->
+    <style>
+      
+      code.language-python::before {
+        content: '>>> ';
+      }
+      
+      code.no-prefix::before {
+        content: '';
+      }
+
+    </style>
+  </head>
+  <body>
+    <header class="header_top">
+      <h1><a href="index.html">I. RACHDI</a></h1>
+    </header>
+    <div class="container">
+      <main>
+        <article class="article_post" itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="page-header">
+            <h1>
+              <span itemprop="name">Récupérer les données d'avito.ma avec Python</span>
+              <time itemprop="datePublished" class="post_date" datetime="2015-10-02T12:40">2 Octobre 2015</time>
+            </h1>
+          </header>
+          <div itemprop="articleBody" class="post_body">
+            <p>
+              On va voir comment extraire les données du site d'annonces <a href='http://avito.ma'>avito.ma</a>, dans notre cas, on va récupérer les données sur les appartements à vendre à Casablanca.
+            </p>
+            <p>
+              Pour faire ceci, on va utiliser python v. 3, donc pensez à l'installer si vous ne l'avez pas déjà. On aura aussi besoin d'installer les modules suivants :</p>
+            <ul>
+              <li><a href="https://pypi.python.org/pypi/beautifulsoup4">BeautifulSoup</a>: pour pouvoir parcrourir le code HTML de la page, et extraire les données qui nous intéressent. <br><code class='language-bash'>pip3 install beautifulsoup4</code></li>
+              <li><a href="https://pypi.python.org/pypi/requests/">requests</a>: pour exécuter les requêtes HTTP plus facilement. <br><code class='language-bash'>pip3 install requests</code></li>
+            </ul>
+            <h2>Envoyer la requête</h2>
+            <p>
+              L'URL pour faire une recherche sur avito est comme ceci: <code>http://www.avito.ma/fr/maroc/?ca=15&q=&cg=1010&w=1005&st=s&m=&m=&spr=&mpr=&o=1</code>. Il y a plusieurs paramètres, mais ceux qui nous intéressent sont: 
+            </p>
+            <ul>
+              <li>cg:  la catégorie.</li>
+              <li>w: la ville.</li>
+              <li>s: Offre (vente) ou demande.</li>
+              <li>o: numéro de la page dans les résultat de la recherche.</li>
+            </ul>
+            <p>
+              Dans un premier temps, on va faire une recherche sur les appartements à vendre à casablanca, et récupérer la première page. Dans l'interpréteur python, on va entrer les instructions suivantes:
+            </p>
+            <pre><code class="language-python">import requests
+
+url = "http://www.avito.ma/fr/maroc/?ca=15&q=&cg=1010&w=1005&st=s&m=&m=&spr=&mpr=&o=1"
+r = requests.get(url, allow_redirects=False)</code></pre>
+            <p>
+              On peut après récupérer la page HTML retournée avec la propriété text de l'objet retourné:
+            </p>
+            <pre><code class="language-python">print(r.text)</code></pre>
+
+            <h2>Extraction des données</h2>
+            <p>Dans le texte qu'on a récupéré plus tôt, on a une liste d'appartements, et chaque élément de la liste contient un lien HTML qui pointe vers une page où on trouvera les détails de l'annonce. Ce qu'il nous faut maintenant c'est un moyen de récupérer l'url de chaque annonce.</p>
+            <p>Pour ceci, on va utiliser le module <a href="https://pypi.python.org/pypi/beautifulsoup4">beautifulsoup4</a>. Ce module nous fournit un parser HTML/XML, et permets de rechercher facilement dans l'arbre HTML. Pour utiliser ce module, après l'avoir importé, il faut lui passer le code HTML qu'on veut parcourir.</p>
+            
+            <pre><code class="language-python">from bs4 import BeautifulSoup as bs4
+
+html = bs4(r.text, 'html.parser')</code></pre>
+            
+            <p>L'objet récupéré nous permetra de sélectionner les éléments qui nous intéressent en utilisant des sélecteurs CSS. Dans notre cas on veut récupérer les liens des annonces. Si on examine le code HTML qu'on a récupéré plus haut, on remarquera que le cadre qui contient les annonces est un élément "div", qui a les classes suivantes "panel-main no-border-radius". Le lien des détails de l'annonce est un élémént "a", a comme parent un élément h2, qui a lui même comma parent un élément div qui a les classes "item-info ctext1 mls".</p>
+            <p>Le module beautifulsoup nous facilite grandement la tâche pour récupérer les liens des annonces, il nous suffit de lui spécifier le sélecteur suivant ".panel-main.no-border-radius .item-info.ctext1.mls h2 a".</p>
+            
+            <pre><code class="language-python">liens = html.select('.panel-main.no-border-radius .item-info.ctext1.mls h2 a')</code></pre>
+            
+            <p>La méthode select retourne la liste des éléments qui sont identifiés par le sélecteur passé en argument. On peut ainsi boucler sur cette liste, et récupérer l'attribut href de chaque lien récupéré.</p>
+            <pre><code class="language-python">for lien in liens:
+...  print(lien['href'])</code></pre>
+            
+            <p>Maintenant qu'on a les liens, on peut parcourir chaque annonce, et récupérer les informations qui nous intéressent en spécifiant le sélecteur de l'élément qui les contient. Voici le code entier qui parcourir toutes les pages des appartements à vendre à Casablanca, et enregistre les informations dans un fichier csv.</p>
+            
+            <pre><code class="language-python no-prefix">from bs4 import BeautifulSoup as bs4
+import requests
+import re
+import time
+import datetime
+import csv
+
+def get_details_apprt(url):
+	r_details = requests.get(url)
+	html = bs4(r_details.text, 'html.parser')
+	titre = re.sub('\s+', ' ', html.select('.page-header.mbm')[0].text)
+	prix = html.select('.vi-price-label .amount')
+	if len(prix) == 0:
+		return None
+	prix = prix[0]['title']
+	aside_infos = html.select('aside.panel.panel-body.panel-info')[0].text
+	m = re.match(r'.*?Nombre de pièces: ([0-9]+).*?', aside_infos, re.DOTALL)
+	if m:
+		nb_pieces = m.group(1)
+
+	m = re.match('.*?Surface: (.*? m²).*?', aside_infos, re.DOTALL)
+	if m:
+		surface = m.group(1)
+	m = re.match(r'.*?Secteur: ([\w_-]+).*?', aside_infos, re.DOTALL)
+	if m:
+		secteur = m.group(1)
+	m = re.match(r".*?Adresse: ([\w'_\s-]+).*?Type", aside_infos, re.DOTALL)
+	if m:
+		adresse = re.sub(r"\s+", " ", m.group(1))
+
+	date = html.select('.date.dtstart.value')[0]['title']
+	annee_mois = extract_date_infos(date)
+	annee = annee_mois[0]
+	mois = annee_mois[1]
+	annonce_details = {'titre': titre, 'prix': prix, 'nb_pieces': nb_pieces, 'surface': surface, 'secteur': secteur, 'adresse': adresse, 'annee': annee, 'mois': mois}
+	return annonce_details
+#end get_details_apprt
+
+def extract_date_infos(dt):
+	dt = re.sub('T', ' ', dt)
+	dt_obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+	return (dt_obj.year, dt_obj.month)
+#end extract_date_infos
+
+
+with open('data_avito.csv', 'w', newline='') as csvfile:
+	fields = ['annee', 'mois', 'titre', 'prix', 'nb_pieces', 'surface', 'secteur', 'adresse']
+	csvwriter = csv.DictWriter(csvfile, fieldnames=fields, delimiter=';', quotechar='"', quoting=csv.QUOTE_ALL)
+	csvwriter.writeheader()	
+
+	for i in range(293):
+		url = "http://www.avito.ma/fr/maroc/?ca=15&q=&cg=1010&w=1005&st=s&m=&m=&spr=&mpr=&o="+str(i+1)
+		print(url)
+		r = requests.get(url, allow_redirects=False)
+		html = bs4(r.text, 'html.parser')
+		liens = html.select('.panel-main.no-border-radius .item-info.ctext1.mls h2 a')
+		for lien in liens:
+			try:
+				details = get_details_apprt(lien['href'])
+				csvwriter.writerow(details)
+				csvwriter.flush()
+			except Exception:
+				continue
+			time.sleep(5)
+
+print("------------------- FIN ------------------")</code></pre>
+          </div>
+        </article>
+      </main>
+    </div>    
+    <script src="js/prism.js?v=3"></script>
+  </body>
+</html>
