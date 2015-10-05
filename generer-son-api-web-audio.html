@@ -21,7 +21,22 @@
               <time itemprop="datePublished" class="post_date" datetime="2015-09-06T12:40">6 Septembre 2015</time>
             </h1>
           </header>
-          <div itemprop="articleBody" class="post_body"></div>
+          <div itemprop="articleBody" class="post_body">
+            Parmi les nouveautés qu'apporte l'HTML5, on trouve la Web Audio API. Cet API nous permets de générer et manipuler du son dans le navigateur. Dans ce qui suit, on va voir comment générer du son, et faire quelque manipulations sur le son généré avant de le rediriger vers la sortie audio.
+            
+            D'abord, il faut savoir que toutes les opérations de la Web Audio API se font via un audio context, un peu comme le cas du canvas, où on doit passer par un context2d pour toutes les opérations de dessin. 
+            Donc, la première chose qu'on devra faire sera de créer ce context. On peut utiliser la syntaxe standard:
+            <code>var audioCtx = new AudioContext();</code>
+            où on peut ajouter la syntaxe préfixée pour webKit
+            <code>var audioCtx = new (window.AudioContext || window.webkitAudioContext)();</code>
+            
+            Si vous utilisez la dernière version de chrome/firefox, la première syntaxe est suffisante.
+            
+            Maintenant qu'on a notre contexte, comment générer du son, et comment écouter ce son généré?
+            
+            Le principe de l'API Web Audio est le suivant: 
+            On a une ou plusieurs source de son, et on une destination qui est généralement les hauts parleurs de notre ordinateur. On peut connecter directement la source et destination, on peut également insérer des "Node"s, qui peuvent faire des manipulations sur le son, puis l'envoyer vers la sortie.
+          </div>
         </article>
       </main>
       <div class="clearfix"></div>
