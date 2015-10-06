@@ -22,9 +22,17 @@
             </h1>
           </header>
           <div itemprop="articleBody" class="post_body">
+            <div class="menu_interne">
+              <ul>
+                <li><a href="creer_context">Créer un contexte audio</a></li>
+                <li><a href="creer_source">Créer une source de son</a></li>
+              </ul>
+            </div>
             Parmi les nouveautés qu'apporte l'HTML5, on trouve la Web Audio API. Cet API nous permets de générer et manipuler du son dans le navigateur. Dans ce qui suit, on va voir comment générer du son, et faire quelque manipulations sur le son généré avant de le rediriger vers la sortie audio.
             
             D'abord, il faut savoir que toutes les opérations de la Web Audio API se font via un audio context, un peu comme le cas du canvas, où on doit passer par un context2d pour toutes les opérations de dessin. 
+            
+            <h2>Créer un contexte audio <a name="creer_context">&para;</a></h2>
             Donc, la première chose qu'on devra faire sera de créer ce context. On peut utiliser la syntaxe standard:
             <code>var audioCtx = new AudioContext();</code>
             où on peut ajouter la syntaxe préfixée pour webKit
@@ -35,7 +43,46 @@
             Maintenant qu'on a notre contexte, comment générer du son, et comment écouter ce son généré?
             
             Le principe de l'API Web Audio est le suivant: 
-            On a une ou plusieurs source de son, et on une destination qui est généralement les hauts parleurs de notre ordinateur. On peut connecter directement la source et destination, on peut également insérer des "Node"s, qui peuvent faire des manipulations sur le son, puis l'envoyer vers la sortie.
+            On a une ou plusieurs source de son, et on une destination (hauts parleurs, ...). On peut connecter directement la source et destination, 
+            <img src="img/webaudio-principe.png" alt="Connexion sources destination">
+            on peut également insérer des "Node"s entre les sources et la destination. Ces nodes peuvent faire des manipulations sur le son, pour après l'envoyer vers la sortie.
+            <img src="img/webaudio-principe2.png" alt="Connexion sources, nodes, destination">
+            
+            <h2>Créer une source de son <a name="creer_source">&para;</a></h2>
+            Un son peut provenir de différentes source: WebRTC MediaStream, élément audio, ou OscillatorNode. Ici, on va utiliser un OscillatorNode pour générer du son.
+            
+            Un OscillatorNode permet de créer une onde périodique d'un type et d'une fréquence qu'on peut spécifier, ce qui a pour effet de générer un son continu. Pour une explication plus détaillé <a href="https://en.wikibooks.org/wiki/Sound_Synthesis_Theory/Oscillators_and_Wavetables#Oscillators">Oscillators_and_Wavetables (anglais)</a>
+            
+            On crée un OscillatorNode en utilisant la méthode createOscillator de notre contexte déjà créé
+            
+            <code>var oscillator = audioCtx.createOscillator();</code>
+            
+            On peut spécifier un type et une fréquence pour l'OscillatorNode qu'on a créé. Les différents types disponibles sont:
+            <ul>
+              <li>sine</li>
+              <li>square</li>
+              <li>sawtooth</li>
+              <li>triangle</li>
+            </ul>
+            <figure class='float-right'>
+              <img src='img/Waveforms.png'>
+              <figcaption>Les différents types d'ondes. Source <a href="https://en.wikibooks.org/wiki/Sound_Synthesis_Theory/Oscillators_and_Wavetables">Oscillators and Wavetables</a></figcaption>
+            </figure>
+            Pour la fréquence, on peut spécifier un nombre positif quelconque. Mais généralement, on voudra utiliser une fréquence qui générera un son audible. L'être humain peut percevoir les fréquences entre 20 Hz et 20,000 Hz.
+            
+            Après avoir créé notre source, il faudra maintenant la conneter à la destination. Pour cela, on fait appel à la méthode connect de notre oscillateur créé, et on lui passe la propriété destination du contexte audio; cette propriété représente la sortie audio.
+            
+            <code>oscillator.connect(audioCtx.destination);</code>
+            
+            Maintenant il ne nous reste plus que démarrer notre oscillateur
+            
+            <code>oscillator.start(0);</code>
+            
+            L'argument qu'on passe représente le nombre de secondes après lesquelles l'oscillateur devra démarrer. 0 signifie démarrer immédiatement.
+            
+            Voici une démo qui vous permettra de tester les différents types avec différentes fréquences
+            
+            <button class='btn btn-gris'>Voir démo</button>
           </div>
         </article>
       </main>

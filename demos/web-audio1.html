@@ -9,6 +9,18 @@ and open the template in the editor.
     <title>Demo Web Audio API 1</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      input[type=range] {
+        width: 300px;
+      }
+      select {
+        padding: 3px;
+      }
+      label {
+        display: inline-block;
+        width: 80px;
+      }
+    </style>
   </head>
   <body>
     <div>
@@ -24,80 +36,35 @@ and open the template in the editor.
       <!--      The audible frequency range for humans is typically given as being between about 20 Hz and 20,000 Hz-->
       <label>Fréquence</label><input type='range' id='frequence' min='20' max='20000' value='440'><span id='val_frequence'></span>
     </div>
-    <div>
-      <label>Volume</label><input type='range' id='volume' min='0' max='100' value='50'><span id='val_volume'></span>
-    </div>
   <script>
+    var frequenceInput, valFrequenceInput;
     var context = new (window.AudioContext || window.webkitAudioContext)();
     var oscillator = context.createOscillator();
-    var gainNode = context.createGain();
 
-    var frequence = 440, volume = 0.5;
+    var frequence = 440;
 
     oscillator.frequency.value = frequence;
-    gainNode.gain.value = volume;
 
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    function playNote(frequency, startTime, duration) {
-      var osc1 = context.createOscillator(),
-              osc2 = context.createOscillator();
-
-      osc1.type = 'triangle';
-      osc2.type = 'triangle';
-
-      var volume = context.createGain();
-      volume.gain.value = 0.1;
-
-      osc1.connect(volume);
-      osc2.connect(volume);
-
-      osc1.frequency.value = frequency + 1;
-      osc2.frequency.value = frequency - 2;
-
-      volume.connect(context.destination);
-      volume.connect(context.destination);
-
-      volume.gain.setValueAtTime(0.1, startTime + duration - 0.05)
-      volume.gain.linearRampToValueAtTime(0, startTime + duration);
-
-      osc1.start(startTime);
-      osc2.start(startTime);
-
-      osc1.stop(startTime + duration);
-      osc2.stop(startTime + duration);
-    }
-
-//      playNote(493.883, context.currentTime, 0.116);
-//
-//      playNote(659.255, context.currentTime + 0.116, 0.232);
+    oscillator.connect(context.destination);
 
     window.addEventListener('load', function () {
 
-      var frequenceInput = document.querySelector('#frequence');
-      document.querySelector('#val_frequence').innerHTML = frequenceInput.value;
+      frequenceInput = document.querySelector('#frequence');
+      valFrequenceInput = document.querySelector('#val_frequence');
+      
+      valFrequenceInput.innerHTML = frequenceInput.value;
 
       frequenceInput.addEventListener('input', function (ev) {
         frequence = ev.target.value;
         oscillator.frequency.value = frequence;
-        document.querySelector('#val_frequence').innerHTML = frequence;
-      });
-
-      var volumeInput = document.querySelector('#volume');
-      document.querySelector('#val_volume').innerHTML = volumeInput.value;
-
-      volumeInput.addEventListener('input', function (ev) {
-        volume = ev.target.value;
-        gainNode.gain.value = volume / 100;
-        document.querySelector('#val_volume').innerHTML = volume / 100;
+        valFrequenceInput.innerHTML = frequence;
       });
 
       document.querySelector('#osc_type').addEventListener('change', function (ev) {
         oscillator.type = ev.target.value;
       });
 
-      oscillator.start();
+      oscillator.start(0);
     })
   </script>
 </body>
