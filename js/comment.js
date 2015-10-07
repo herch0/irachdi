@@ -3,7 +3,6 @@ $(function () {
     var form = $(this);
     $.post(form.attr('action'), form.serialize())
             .done(function (data) {
-//              $("#comments_container").html(data);
               clear_comments_field();
               load_comments(postId);
             })

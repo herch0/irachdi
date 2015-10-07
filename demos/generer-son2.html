@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>Demo Web Audio API 1</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      input[type=range] {
+        width: 300px;
+      }
+      select {
+        padding: 3px;
+      }
+      label {
+        display: inline-block;
+        width: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <label>Volume</label><input type='range' id='volume' min='0' max='100' value='50'>
+    </div>
+    <script>
+      var volumeInput;
+      var context = new (window.AudioContext || window.webkitAudioContext)();
+
+      var oscillator = context.createOscillator();
+      var gainNode = context.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+
+      window.addEventListener('load', function () {
+
+        volumeInput = document.querySelector('#volume');
+
+        volumeInput.addEventListener('input', function (ev) {
+          var volume = ev.target.value;
+          gainNode.gain.value = volume / 100;
+        });
+
+        oscillator.start(0);
+        //stop après 10 secondes
+        //oscillator.stop(10);
+      })
+    </script>
+  </body>
+</html>

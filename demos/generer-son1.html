@@ -36,36 +36,38 @@ and open the template in the editor.
       <!--      The audible frequency range for humans is typically given as being between about 20 Hz and 20,000 Hz-->
       <label>Fréquence</label><input type='range' id='frequence' min='20' max='20000' value='440'><span id='val_frequence'></span>
     </div>
-  <script>
-    var frequenceInput, valFrequenceInput;
-    var context = new (window.AudioContext || window.webkitAudioContext)();
-    var oscillator = context.createOscillator();
+    <script>
+      var frequenceInput, valFrequenceInput;
+      var context = new (window.AudioContext || window.webkitAudioContext)();
+      var oscillator = context.createOscillator();
 
-    var frequence = 440;
+      var frequence = 440;
 
-    oscillator.frequency.value = frequence;
+      oscillator.frequency.value = frequence;
 
-    oscillator.connect(context.destination);
+      oscillator.connect(context.destination);
 
-    window.addEventListener('load', function () {
+      window.addEventListener('load', function () {
 
-      frequenceInput = document.querySelector('#frequence');
-      valFrequenceInput = document.querySelector('#val_frequence');
-      
-      valFrequenceInput.innerHTML = frequenceInput.value;
+        frequenceInput = document.querySelector('#frequence');
+        valFrequenceInput = document.querySelector('#val_frequence');
 
-      frequenceInput.addEventListener('input', function (ev) {
-        frequence = ev.target.value;
-        oscillator.frequency.value = frequence;
-        valFrequenceInput.innerHTML = frequence;
-      });
+        valFrequenceInput.innerHTML = frequenceInput.value;
 
-      document.querySelector('#osc_type').addEventListener('change', function (ev) {
-        oscillator.type = ev.target.value;
-      });
+        frequenceInput.addEventListener('input', function (ev) {
+          frequence = ev.target.value;
+          oscillator.frequency.value = frequence;
+          valFrequenceInput.innerHTML = frequence;
+        });
 
-      oscillator.start(0);
-    })
-  </script>
-</body>
+        document.querySelector('#osc_type').addEventListener('change', function (ev) {
+          oscillator.type = ev.target.value;
+        });
+
+        oscillator.start(0);
+        //stop après 10 secondes
+        //oscillator.stop(10);
+      })
+    </script>
+  </body>
 </html>
