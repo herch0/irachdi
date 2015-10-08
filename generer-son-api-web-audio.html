@@ -116,15 +116,31 @@ gainNode.connect(audioCtx.destination); </code></pre>
             <p>Maintenant, pour modifier le volume, il suffit de changer la valeur de la propriété <code class="language-javascript">gain</code>. Notez que la valeur spécifié doit être un nombre réel entre 0 et 1.</p>
 
             <pre><code class='language-javascript'>gainNode.gain.value = 0.2;</code></pre>
-            
+
             <a class='btn btn-gris' href='demos/generer-son2.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a>
-            
+
             <p>Voilà, votre navigateur est maintenant capable de générer du son... énérvant certes, mais on n'a utilisé ici que les fonctionalités basiques de l'API Web Audio. Il y a encore beaucoup de choses à explorer, et de mélodies à composer :) .</p>
           </div>
         </article>
       </main>
+      <section class="comments_section">
+        <form id="form_comment" method="GET">
+          <input type="hidden" id="action" name="action" value="ADD_COMMENT">
+          <div class="div_col">
+            <div class="div_row">
+              <input type="text" id="name" name="name" placeholder="Nom">
+              <input type="email" id="email" name="email" placeholder="Email">
+            </div>
+            <div class="div_row">
+              <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
+            </div>
+            <input type="button" class="btn btn-default block" id="add_comment" value="Ajouter commentaire">
+          </div>
+        </form>
+      </section>
       <div class="clearfix"></div>
     </div>
     <script src="js/prism.js"></script>
+    <script src="js/comment.js?v=1"></script>
   </body>
 </html>
