@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générer du son avec l'api Web Audio</title>
+    <link href="css/prism.css" rel="stylesheet">
+    <link href="css/styles.css?v=3" rel="stylesheet">
+    <link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="header_top">
+      <h1><a href="index.html">I. RACHDI</a></h1>
+    </header>
+    <div class="container">
+      <main>
+        <article class="article_post" itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="page-header">
+            <h1>
+              <span itemprop="name">Générer du son avec l'api Web Audio</span>
+              <time itemprop="datePublished" class="post_date" datetime="2015-10-07T17:40">7 Octobre 2015</time>
+            </h1>
+          </header>
+          <div itemprop="articleBody" class="post_body">
+            <nav class="menu_interne float-right">
+              <ul>
+                <li><a href="#creer_context">Créer un contexte audio</a></li>
+                <li><a href="#creer_source">Créer une source de son</a></li>
+                <li><a href='#jouer_son'>Jouer son</a></li>
+                <li><a href='#manipuler_son'>Manipuler le son</a></li>
+              </ul>
+            </nav>
+            <p>Parmi les nouveautés qu'apporte l'HTML5, on trouve la Web Audio API. Cet API nous permets de générer et manipuler du son dans le navigateur. Dans ce qui suit, on va voir comment générer du son, et faire quelque manipulations sur le son généré avant de le rediriger vers la sortie audio.</p>
+
+            <p>D'abord, il faut savoir que toutes les opérations de la Web Audio API se font via un audio context, un peu comme le cas du canvas, où on doit passer par un context 2d pour toutes les opérations de dessin. </p>
+
+            <h2>Créer un contexte audio <a name="creer_context" href="#creer_context">&para;</a></h2>
+            <p>Donc, la première chose qu'on devra faire sera de créer ce context. On peut utiliser la syntaxe standard:</p>
+            <pre><code class='language-javascript'>var audioCtx = new AudioContext();</code></pre>
+            <p>où on peut ajouter la syntaxe préfixée pour webKit</p>
+            <pre><code class='language-javascript'>var audioCtx = new (window.AudioContext || window.webkitAudioContext)();</code></pre>
+
+            <p>Si vous utilisez la dernière version de chrome/firefox, la première syntaxe est suffisante.</p>
+
+            <p>Maintenant qu'on a notre contexte, comment générer du son, et comment écouter ce son généré?</p>
+
+            <p>Le principe de l'API Web Audio est le suivant: 
+              On a une ou plusieurs source de son, et on une destination (hauts parleurs, ...). On peut connecter directement la source et destination, </p>
+            <figure>
+              <img src="img/webaudio-principe.png" alt="Connexion sources destination">
+            </figure>
+            <p>on peut également insérer des "Node"s entre les sources et la destination. Ces nodes peuvent faire des manipulations sur le son, pour après l'envoyer vers la sortie.</p>
+            <figure>
+              <img src="img/webaudio-principe2.png" alt="Connexion sources, nodes, destination">
+            </figure>
+
+            <h2>Créer une source de son <a name="creer_source" href="#creer_source">&para;</a></h2>
+            <p>Un son peut provenir de différentes source: WebRTC MediaStream, élément audio, ou <code class='language-javascript'>OscillatorNode</code>. Ici, on va utiliser un OscillatorNode pour générer du son.</p>
+
+            <p>Un OscillatorNode permet de créer une onde périodique d'un type et d'une fréquence qu'on peut spécifier, ce qui a pour effet de générer un son continu. Pour une explication plus détaillé <a href="https://en.wikibooks.org/wiki/Sound_Synthesis_Theory/Oscillators_and_Wavetables#Oscillators">Oscillators_and_Wavetables (anglais)</a></p>
+
+            <p>On crée un <code class='language-javascript'>OscillatorNode</code> en utilisant la méthode createOscillator de notre contexte déjà créé:</p>
+
+            <pre><code class='language-javascript'>var oscillator = audioCtx.createOscillator();</code></pre>
+
+            <p>On peut spécifier un type et une fréquence pour l'OscillatorNode qu'on a créé. Les différents types disponibles sont:</p>
+
+            <figure class='float-right'>
+              <img src='img/Waveforms.png'>
+              <figcaption>Les différents types d'ondes. <br>
+                Source <a href="https://en.wikibooks.org/wiki/Sound_Synthesis_Theory/Oscillators_and_Wavetables">Oscillators and Wavetables</a></figcaption>
+            </figure>
+            <ul>
+              <li>sine</li>
+              <li>square</li>
+              <li>sawtooth</li>
+              <li>triangle</li>
+            </ul>
+            <p>Pour la fréquence, on peut spécifier un nombre positif quelconque. Mais généralement, on voudra utiliser une fréquence qui générera un son audible. L'être humain peut percevoir les fréquences entre 20 Hz et 20,000 Hz.</p>
+
+            <pre><code class="language-javascript">oscillator.frequency.value = 440;
+oscillator.type = 'sin';  //sin est le type par défaut</code></pre>
+            <h2>Jouer le son <a href='#jouer_son' name='jouer_son'>&para;</a></h2>
+            <p>Après avoir créé notre source, il faudra maintenant la conneter à la destination. Pour cela, on fait appel à la méthode <code class="language-javascript">connect</code> de notre oscillateur créé, et on lui passe la propriété <code class="language-javascript">destination</code> du contexte audio; cette propriété représente la sortie audio.</p>
+
+            <pre><code class='language-javascript'>oscillator.connect(audioCtx.destination);</code></pre>
+
+            <p>Maintenant il ne nous reste plus que démarrer notre oscillateur, ce qui a pour effet de jouer une tonalité continue.</p>
+
+            <pre><code class='language-javascript'>oscillator.start(0);</code></pre>
+
+            <p>L'argument qu'on passe représente le nombre de secondes après lesquelles l'oscillateur devra démarrer. 0 signifie démarrer immédiatement.</p>
+
+            <p>Pour stopper le son, on utilise la méthode stop en lui spécifiant après combien de secondes le son devra s'arrêter:</p>
+
+            <pre><code class='language-javascript'>oscillator.stop(2);  //Arrêter après 2 secondes</code></pre>
+
+            <p>Voici une démo qui vous permettra de tester les différents types d'oscilatteur avec différentes fréquences.</p>
+
+            <a class='btn btn-gris' href='demos/generer-son1.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a>
+
+            <h2>Manipuler le son <a name='manipuler_son' href='#manipuler_son'>&para;</a></h2>
+            <p>On avait dit qu'on peut connecter la source du son et la destination directement, comme on a fait plus haut; mais on peut également ajouter un ou plusieurs Node entre la source la destination, pour faire quelques manipulation sur le son, par exemple, changer le volume du son.</p>
+
+            <p>Pour pouvoir changer le volume, on devra mettre un <code class='language-javascript'>GainNode</code> entre la source et la destination, ce qui veut dire qu'on va connecter l'oscillateur au <code class='language-javascript'>GainNode</code> qu'on va créer, puis on connecte ce dernier à la sortie <code class='language-javascript'>audioCtx.destination</code></p>
+
+            <p>D'abord, créons un GainNode.</p>
+
+            <pre><code class='language-javascript'>var gainNode = audioCtx.createGain();</code></pre>
+
+            <p>Puis, on connecte le tout.</p>
+
+            <pre><code class='language-javascript'>oscillator.connect(gainNode);
+gainNode.connect(audioCtx.destination); </code></pre>
+
+            <p>Maintenant, pour modifier le volume, il suffit de changer la valeur de la propriété <code class="language-javascript">gain</code>. Notez que la valeur spécifié doit être un nombre réel entre 0 et 1.</p>
+
+            <pre><code class='language-javascript'>gainNode.gain.value = 0.2;</code></pre>
+
+            <a class='btn btn-gris' href='demos/generer-son2.html' target="_blank"><i class="fa fa-eye"></i> Voir démo</a>
+
+            <p>Voilà, votre navigateur est maintenant capable de générer du son... énérvant certes, mais on n'a utilisé ici que les fonctionalités basiques de l'API Web Audio. Il y a encore beaucoup de choses à explorer, et de mélodies à composer :) .</p>
+          </div>
+        </article>
+      </main>
+      <section class="comments_section">
+        <form id="form_comment" method="GET">
+          <input type="hidden" id="action" name="action" value="ADD_COMMENT">
+          <div class="div_col">
+            <div class="div_row">
+              <input type="text" id="name" name="name" placeholder="Nom">
+              <input type="email" id="email" name="email" placeholder="Email">
+            </div>
+            <div class="div_row">
+              <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
+            </div>
+            <input type="button" class="btn btn-default block" id="add_comment" value="Ajouter commentaire">
+          </div>
+        </form>
+      </section>
+      <div class="clearfix"></div>
+    </div>
+    <script src="js/prism.js"></script>
+    <script src="js/comment.js?v=1"></script>
+  </body>
+</html>
