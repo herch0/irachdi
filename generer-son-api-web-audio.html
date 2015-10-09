@@ -124,8 +124,9 @@ gainNode.connect(audioCtx.destination); </code></pre>
         </article>
       </main>
       <section class="comments_section">
-        <form id="form_comment" method="GET">
-          <input type="hidden" id="action" name="action" value="ADD_COMMENT">
+        <div id="list_comments"></div>
+        <form id="form_comment" action="comments-ajx.php" method="POST" onsubmit="ajouter_comment(event)">
+          <input type="hidden" id="req_action" name="req_action" value="ADD_COMMENT">
           <div class="div_col">
             <div class="div_row">
               <input type="text" id="name" name="name" placeholder="Nom">
@@ -134,13 +135,13 @@ gainNode.connect(audioCtx.destination); </code></pre>
             <div class="div_row">
               <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
             </div>
-            <input type="button" class="btn btn-default block" id="add_comment" value="Ajouter commentaire">
+            <button class="btn btn-default block" id="add_comment">Ajouter commentaire</button>
           </div>
         </form>
       </section>
       <div class="clearfix"></div>
     </div>
     <script src="js/prism.js"></script>
-    <script src="js/comment.js?v=1"></script>
+    <script src="js/comment.js?v=2"></script>
   </body>
 </html>

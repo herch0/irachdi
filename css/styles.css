@@ -436,11 +436,12 @@ a.btn:visited {
   text-shadow: 0 1px 1px #1D1D1D;
   cursor: pointer;
   display: inline-block;
+  text-decoration: none;
 }
-a.btn:hover {
+/*a.btn:hover {
   color: white;
-}
-a.btn:visited {
+}*/
+a.btn:hover, a.btn:visited {
   color: black;
 }
 .btn:disabled {
@@ -704,7 +705,7 @@ a.danger:hover {
   vertical-align: bottom;
 }
 
-#div_comments label {
+/*#div_comments label {
   font-size: .9rem;
   width: 20%;
 }
@@ -712,7 +713,7 @@ a.danger:hover {
 #container_form_comment {
   padding: 15px;
   padding-bottom: 5px;
-  /*background-color: #F2F2F2;*/
+  background-color: #F2F2F2;
 }
 
 .comment_author {
@@ -742,7 +743,7 @@ a.danger:hover {
 }
 #comments_container {
   padding: 0 15px;
-}
+}*/
 
 .post_title h2 {
   /*border-bottom: 1px solid #EDEDED;*/
@@ -920,4 +921,31 @@ figcaption {
 }
 .div_row input {
   width: 48%;
+}
+
+#list_comments {
+  margin-bottom: 30px;
+}
+
+.comment {
+  margin-bottom: 8px;
+  background-color: #E5E9F3;
+  background: linear-gradient(to right, #E5E9F3, #fff);
+  /*border: 1px solid #ccc;*/
+  border-radius: 5px;
+  padding: 4px 6px;
+}
+
+.comment h4 {
+  margin-top: 4px;
+}
+
+.comment h4 time {
+  font-size: .7em;
+  font-weight: normal;
+  color: #878787;
+}
+.comment p {
+  margin-left: 8px;
+  font-size: .95em;
 }
