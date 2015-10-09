@@ -113,22 +113,19 @@
           </div>
         </article>
       </main>
-      <section class="comments_section">
-        <div id="list_comments"></div>
-        <form id="form_comment" action="comments-ajx.php">
-          <input type="hidden" id="req_action" name="req_action" value="ADD_COMMENT">
-          <div class="div_col">
-            <div class="div_row">
-              <input type="text" id="name" name="name" placeholder="Nom">
-              <input type="email" id="email" name="email" placeholder="Email">
-            </div>
-            <div class="div_row">
-              <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
-            </div>
-            <button class="btn btn-default block" id="add_comment" onclick="ajouter_comment(event)">Ajouter commentaire</button>
+      <form id="form_comment" action="comments-ajx.php" method="POST" onsubmit="ajouter_comment(event)">
+        <input type="hidden" id="req_action" name="req_action" value="ADD_COMMENT">
+        <div class="div_col">
+          <div class="div_row">
+            <input type="text" id="name" name="name" placeholder="Nom">
+            <input type="email" id="email" name="email" placeholder="Email">
           </div>
-        </form>
-      </section>
+          <div class="div_row">
+            <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
+          </div>
+          <button class="btn btn-default block" id="add_comment">Ajouter commentaire</button>
+        </div>
+      </form>
       <div class="clearfix"></div>
     </div>
     <script src="js/prism.js"></script>
