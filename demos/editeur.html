@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Simple editor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      #editeur {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 50%;
+      }
+      #toolbar {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 5px;
+      }
+      #zone_edition {
+        min-height: 200px;
+        border: 1px solid #ccc;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='editeur'>
+      <div id='toolbar'>
+        <button onclick='gras()'>Gras</button>
+        <button onclick='italic()'>Italic</button>
+        <button onclick='souligne()'>Souligné</button>
+      </div>
+      <div contenteditable id='zone_edition'></div>
+    </div>
+    <script>
+      function gras() {
+        document.execCommand('bold');
+      }
+      function italic() {
+        document.execCommand('italic');
+      }
+      function souligne() {
+        document.execCommand('underline');
+      }
+    </script>
+  </body>
+</html>

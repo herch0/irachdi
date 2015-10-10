@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un éditeur simple avec execCommand() et contentEditable</title>
+    <link href="css/prism.css" rel="stylesheet">
+    <link href="css/styles.css?v=3" rel="stylesheet">
+    <link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="header_top">
+      <h1><a href="index.html">I. RACHDI</a></h1>
+    </header>
+    <div class="container">
+      <main>
+        <article class="article_post" itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="page-header">
+            <h1>
+              <span itemprop="name">Créer un éditeur simple <br>avec execCommand() et contentEditable</span>
+              <time itemprop="datePublished" class="post_date" datetime="2015-10-07T17:40">7 Octobre 2015</time>
+            </h1>
+          </header>
+          <div itemprop="articleBody" class="post_body">
+            <nav class="menu_interne float-right">
+              <ul>
+                <li><a href="#creer_interface">Créer l'interface</a></li>
+                <li><a href="#creer_actions">Créer les actions javascript</a></li>
+              </ul>
+            </nav>
+            <p>La fonction <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand">Document.execCommand()</a> permets d'exécuter plusieurs commande sur un élément editable (<code class="language-javascript">contentEditable=true</code>), tels que mettre le texte en gras, italic, changer la taille du texte... ou bien insérer des éléments tels que des images, des liens, etc.</p>
+            <p>Nous allons créer un éditeur simple en utilisant cette fonction sur une div qu'on rendra éditable.</p>
+            <h2>Créer l'interface <a href="#creer_interface" name='creer_interface'>&para;</a></h2>
+            <p>Créons d'abord l'interface de notre éditeur. Rien de bien compliqué, un div qui contiendra les boutons, et un autre div qui sera la zone d'édition.</p>
+            <pre><code class='language-markup'>&lt;div id='editeur'&gt;
+  &lt;div id='toolbar'&gt;
+    &lt;button onclick='gras()'&gt;Gras&lt;/button&gt;
+    &lt;button onclick='italic()'&gt;Italic&lt;/button&gt;
+    &lt;button onclick='souligne()'&gt;Soulign&eacute;&lt;/button&gt;
+    ...
+  &lt;/div&gt;
+  &lt;div contenteditable id='zone_edition'&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            <p>Chaque bouton aura une action spécifique qu'on devra implémenter en javascript.</p>
+            <h2>Créer les actions javascript <a href='#creer_actions' name='creer_actions'>&para;</a></h2>
+            <p>Côté javascript, rien de compliqué non plus. POur chaque action qu'on veut exécuter, on appelle la fonction execCommand() avec le nom de la commade qu'on veut exécuter. Par exemple pour mettre le texte en gras, on appele la fonction execCommand avec la commande 'bold' <code class="language-javascript">document.execCommand('bold')</code>, et ainsi de suite.</p>
+            <pre><code class="language-javascript">function gras() {
+  document.execCommand('bold');
+}
+function italic() {
+  document.execCommand('italic');
+}
+function souligne() {
+  document.execCommand('underline');
+}
+//...</code></pre>
+          </div>
+        </article>
+      </main>
+      <section class="comments_section">
+        <div id="list_comments"></div>
+        <form id="form_comment" action="comments-ajx.php" method="POST" onsubmit="ajouter_comment(event)">
+          <input type="hidden" id="req_action" name="req_action" value="ADD_COMMENT">
+          <div class="div_col">
+            <div class="div_row">
+              <input type="text" id="name" name="name" placeholder="Nom">
+              <input type="email" id="email" name="email" placeholder="Email">
+            </div>
+            <div class="div_row">
+              <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
+            </div>
+            <button class="btn btn-default block" id="add_comment">Ajouter commentaire</button>
+          </div>
+        </form>
+      </section>
+      <div class="clearfix"></div>
+    </div>
+    <script src="js/prism.js"></script>
+    <script src="js/comment.js?v=2"></script>
+  </body>
+</html>
