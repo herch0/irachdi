@@ -5,6 +5,7 @@
     <title>Simple editor</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
       #editeur {
         padding: 5px;
@@ -20,6 +21,9 @@
         border: 1px solid #ccc;
         margin-bottom: 5px;
       }
+      #toolbar button {
+        margin-right: 3px;
+      }
       #zone_edition {
         min-height: 200px;
         border: 1px solid #ccc;
@@ -30,21 +34,51 @@
   <body>
     <div id='editeur'>
       <div id='toolbar'>
-        <button onclick='gras()'>Gras</button>
-        <button onclick='italic()'>Italic</button>
-        <button onclick='souligne()'>Souligné</button>
+        <button onclick='gras()' title="Gras"><i class="fa fa-bold"></i></button>
+        <button onclick='italic()' title="Italic"><i class="fa fa-italic"></i></button>
+        <button onclick='souligne()' title="Souligné"><i class="fa fa-underline"></i></button>
+        <select id="bg_color" onchange='bg_color(this.value)'>
+          <option value=''>Arrière plan</option>
+          <option value='white' style='color: white'>Blanc</option>
+          <option value='black' style='color: black'>Noir</option>
+          <option value='blue' style='color: blue'>Bleu</option>
+          <option value='red' style='color: red'>Rouge</option>
+          <option value='green' style='color: green'>Vert</option>
+          <option value='yellow' style='color: yellow'>Jaune</option>
+        </select>
+        <button onclick='copier()' title="Copier"><i class="fa fa-copy"></i></button>
+        <button onclick='couper()' title="Couper"><i class="fa fa-cut"></i></button>
+        <button onclick='undo()' title="Annuler"><i class="fa fa-undo"></i></button>
+        <button onclick='redo()' title="Répéter"><i class="fa fa-repeat"></i></button>
       </div>
       <div contenteditable id='zone_edition'></div>
     </div>
     <script>
       function gras() {
-        document.execCommand('bold');
+        document.execCommand('bold', true);
       }
       function italic() {
         document.execCommand('italic');
       }
       function souligne() {
         document.execCommand('underline');
+      }
+      function bg_color(color) {
+        if (color != '') {
+          document.execCommand('backColor', false, color);
+        }
+      }
+      function copier() {
+        document.execCommand('copy');
+      }
+      function couper() {
+        document.execCommand('cut');
+      }
+      function redo() {
+        document.execCommand('redo');
+      }
+      function undo() {
+        document.execCommand('undo');
       }
     </script>
   </body>
