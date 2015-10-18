@@ -183,7 +183,7 @@ hr {
   height: 1px;
 }
 /**************** form ***********************/
-input[type=text], input[type=password], input[type=number], input[type=email], 
+input[type=text], input[type=password], input[type=number], input[type=email],
 select.style, textarea {
   background-image: linear-gradient(#ECECEC, #fff);
   background-color: #fff;
@@ -201,12 +201,12 @@ input[type=checkbox] {
   margin-bottom: 8px!important;
   vertical-align: middle;
 }
-input[type=text]:focus, input[type=password]:focus, 
+input[type=text]:focus, input[type=password]:focus,
 input[type=number]:focus, select.style:focus, textarea:focus {
   border: 1px solid #66AFE9;
   box-shadow: 1px 1px 5px #66AFE9;
 }
-input[type=text]:disabled, input[type=password]:disabled, input[type=number]:disabled, 
+input[type=text]:disabled, input[type=password]:disabled, input[type=number]:disabled,
 select.style:disabled, textarea:disabled {
   background-image: none;
   background-color: #E0E1E3;
@@ -595,7 +595,7 @@ a.btn:hover, a.btn:visited {
   border: 1px solid #ccc;
 }
 
-.rounded {  
+.rounded {
   border-radius: 5px;
 }
 
@@ -655,7 +655,7 @@ legend.styled {
   padding: 5px 10px!important;
   color: black;
   border-radius: 5px;
-  border: 1px solid #ccc!important;  
+  border: 1px solid #ccc!important;
 }
 
 .pull-right {
@@ -948,4 +948,24 @@ figcaption {
 .comment p {
   margin-left: 8px;
   font-size: .95em;
+}
+
+.header_top h1 {
+  justify-content: space-between
+}
+
+.header_social_links {
+  font-size: .8em;
+  margin-right: 20px;
+  padding-right: 5px;
+}
+.header_social_links a {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 50%;
+}
+.header_social_links a:hover {
+  background: #DADBDC;
+  color: #356988
 }

@@ -82,7 +82,7 @@ html = bs4(r.text, 'html.parser')</code></pre>
             <pre><code class="language-python">for lien in liens:
 ...  print(lien['href'])</code></pre>
 
-            <p>Maintenant qu'on a les liens, on peut parcourir chaque annonce, et récupérer les informations qui nous intéressent en spécifiant le sélecteur de l'élément qui les contient. Voici le code entier qui parcourir toutes les pages des appartements à vendre à Casablanca, et enregistre les informations dans un fichier csv.</p>
+            <p>Maintenant qu'on a les liens, on peut parcourir chaque annonce, et récupérer les informations qui nous intéressent en spécifiant le sélecteur de l'élément qui les contient. Voici le code entier qui parcoure toutes les pages des appartements à vendre à Casablanca, et enregistre les informations dans un fichier csv.</p>
 
             <pre><code class="language-python no-prefix">from bs4 import BeautifulSoup as bs4
 import requests
