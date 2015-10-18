@@ -50,7 +50,7 @@
     &lt;script&gt;
       window.onload = function () {
         document.addEventListener('visibilitychange', function (event) {
-          var visible = !document.hidden;		
+          var visible = !document.hidden;
           var div_etat = document.getElementById('etat_page');
           div_etat.innerHTML += "&lt;br&gt; L'état est " + (visible ? 'visible' : 'caché');
         }, false);
@@ -65,7 +65,7 @@
 
             <p>Dans cet exemple, on va ajouter un élément audio à notre page, et on va le lire quand la page est visible, et l'arrêter quand elle est cachée.</p>
 
-            <code class="language-markup">&lt;audio src="audio.ogg" id="fichier_audio" controls autoplay&gt;&lt;/audio&gt;</code>
+            <pre><code class="language-markup">&lt;audio src="audio.ogg" id="fichier_audio" controls autoplay&gt;&lt;/audio&gt;</code></pre>
 
             <p>L'élément audio lira le fichier audio <code>audio.ogg</code>, vous pouvez le remplacer avec un autre fichier, veillez juste à mettre le nom exact du fichier. L'attribut <code>controls</code> affiche le lecteur du navigateur, et <code>autoplay</code> demande au navigateur de lire le fichier aussitôt qu'il est chargé.</p>
 
