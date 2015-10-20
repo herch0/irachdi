@@ -38,13 +38,22 @@
             <p>Pour arriver à notre fin, on aura besoin des outils suivants: </p>
             <ul>
               <li>Python bien sûr, version 3.</li>
-              <li>pip, pour installer facilement nos modules.</li>
+              <li>Pip, pour installer facilement nos modules.</li>
               <li>Le module <a href="https://pypi.python.org/pypi/requests">requests</a>, qui nous facilitera la tâche pour l'envoi des requêtes HTTP.</li>
               <li>Le module <a href="https://pypi.python.org/pypi/beautifulsoup4">beautifulsoup4</a>, qui nous permettra de naviguer dans le contenu html et extraire les données qui nous intéressent.</li>
             </ul>
-            <p>On va donc installer ces deux modules. Avec pip, l'installation de chaque module se fait en une seule ligne: </p>
+            <p>On va donc installer ces deux modules. Avec pip, l'installation de chaque module se fait facilement en une seule ligne: </p>
             <pre><code class='language-bash'>pip3 install requests
 pip3 install beautifulsoup4</code></pre>
+            <h2>Exploration du site emploi.ma <a href='#emploi_ma' name='emploi_ma'>&para;</a></h2>
+            <p>Commençant maintenant l'exploration du site emploi.ma.</p>
+            <p>Si on fait une recherche sur les métiers de l'"Informatique, nouvelles technologies", dans la région de Casablanca, on remarquera qu'une requête GET est envoyé à la page <code>http://www.emploi.ma/recherche-jobs-maroc</code>, avec un paramètre filters qui la valeur <code>tid:31 tid:58</code>. Ce paramètre est construit de la façon suivant <code>filter=tid:[id fonction] tid:[id ville]</code></p>
+            <p>On peut maintenant envoyer une requête de recherche, et récupérer nos annonces.</p>
+            <pre><code class='language-python'>import requests
+params = {'filters': 'tid:31 tid:58'}
+emploi_ma_url = 'http://www.emploi.ma/recherche-jobs-maroc'
+r = requests.get(emploi_ma_url, params=params)</code></pre>
+            <p>Le contenu HTML retourné est disponible dans la propriété text de la réponse <code>r</code> retourné.</p>
           </div>
         </article>
       </main>
