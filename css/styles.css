@@ -831,6 +831,8 @@ a.danger:hover {
 }
 .container ul {
   font-family: robotoregular;
+  font-size: 1.3em;
+  line-height: 1.4em;
 }
 
 .lire_suite {
@@ -871,6 +873,7 @@ a.danger:hover {
 }
 
 nav.menu_interne ul {
+  font-size: .9rem;
   list-style-type: none;
   background-color: #E9ECF3;
   padding: 1em;
