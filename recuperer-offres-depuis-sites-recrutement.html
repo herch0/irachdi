@@ -27,11 +27,11 @@
             </h1>
           </header>
           <div itemprop="articleBody" class="post_body">
-            <nav class="menu_interne float-right">
+<!--            <nav class="menu_interne float-right">
               <ul>
                 <li><a href="#prerequis">Pré-requis</a></li>
               </ul>
-            </nav>
+            </nav>-->
             <p>Dans un article précédent, on avait vu comment <a href="recuperer-donnees-avito-ma-python.html">récupérer les annonces depuis avito.ma</a>. Dans cet article, on va utiliser les même outils, mais cette fois on va explorer les sites de recrutement, et plus précisemment <a href="http://rekrute.com">rekrute.com</a> et <a href="http://emploi.ma">emploi.ma</a>.</p>
             <p>Le principe, ainsi que les outils sont les même que dans le précédent article; on envoie une requête au site, puis on récupère le contenu, après, on extrait les données qu'on veut depuis le contenu html récupéré.</p>
             <h2>Pré-requis <a href='#prerequis' name='prerequis'>&para;</a></h2>
@@ -47,20 +47,20 @@
 pip3 install beautifulsoup4</code></pre>
             <h2>Exploration du site emploi.ma <a href='#emploi_ma' name='emploi_ma'>&para;</a></h2>
             <p>Commençant maintenant l'exploration du site emploi.ma.</p>
-            <p>Si on fait une recherche sur les métiers de l'"Informatique, nouvelles technologies", dans la région de Casablanca, on remarquera qu'une requête GET est envoyé à la page <code>http://www.emploi.ma/recherche-jobs-maroc</code>, avec un paramètre filters qui la valeur <code>tid:31 tid:58</code>. Ce paramètre est construit de la façon suivant <code>filter=tid:[id fonction] tid:[id ville]</code></p>
+            <p>Si on fait une recherche sur les métiers de l'"Informatique, nouvelles technologies", dans la région de Casablanca, on remarquera qu'une requête GET est envoyé à la page <code>http://www.emploi.ma/recherche-jobs-maroc</code>, avec un paramètre <code>filters</code> qui la valeur "<code>tid:31 tid:58</code>". Ce paramètre est construit de la façon suivant <code>filter=tid:[id fonction] tid:[id ville]</code>.</p>
             <p>On peut maintenant envoyer une requête de recherche, et récupérer nos annonces.</p>
             <pre><code class='language-python'>import requests
 params = {'filters': 'tid:31 tid:58'}
 emploi_ma_url = 'http://www.emploi.ma/recherche-jobs-maroc'
 r = requests.get(emploi_ma_url, params=params)</code></pre>
             <p>Le contenu HTML retourné est disponible dans la propriété <code>text</code> de la réponse <code>r</code> retourné.</p>
-            <p>Maintenant qu'on récupéré le contenu HTML, on va faire appel au module beautifulsoup pour parcourir le contenu retourné, et extraire les données.</p>
+            <p>Maintenant qu'on a récupéré le contenu HTML, on va faire appel au module beautifulsoup pour parcourir le contenu retourné, et extraire les données.</p>
             <p>D'abord, on importe le module puis on crée un objet <code>BeautifulSoup</code>, en lui passant le code HTML, ainsi que le type de parseur qu'on veut utiliser.</p>
             <pre><code class='language-python'>from bs4 import BeautifulSoup as bs4
 html = bs4(r.text, 'html.parser')</code></pre>
             <p>Après examination du code de la page de recherche, on remarque que les div qui contiennent les annonces ont les classes "<code>emasearch-result</code>" et "<code>job-search-result</code>", on passe donc ce sélecteur à la méthode <code class='language-python'>BeautifulSoup.select()</code> qui nous retource les éléments qui correspondent au sélecteur spécifié.</p>
             <pre><code class='language-python'>annonces = html.select('.emasearch-result.job-search-result')</code></pre>
-<p>Après, on va boucler sur les éléments div récupérés, puis extraire la date, titre, lien de l'annonce, ainsi que le nom du recruteur</p>
+<p>Après, on va boucler sur les éléments div récupérés, puis extraire la date, titre, lien de l'annonce, ainsi que le nom du recruteur.</p>
           <pre><code class='language-python'>for annonce in annonces:
     date = annonce.find('div', class_='date search-date').string
     print(date)
@@ -86,8 +86,53 @@ print(titre, href)</code></pre>
             <pre><code class="language-python">recruteur = annonce.find('h4', class_='recruiter-name').contents[0].string
 print(recruteur.strip())</code></pre>
 <p>Même principe pour le nom du recruteur, on change juste le nom de l'élément, qui est dans ce cas un <code>h4</code>, et l'attribut <code>class</code> qui a la valeur "<code>recruiter-name</code>".</p>
-          <p>Les résultats qu'on a récupéré sont ceux de la première page, pour récupérer les autres pages, on devra ajouter le paramètre <code>page</code> au dictionnaire <code>params</code> qu'on a créé au début avant d'envoyer la requête.</p>
+          <p>Les résultats qu'on a récupéré sont ceux de la première page, pour récupérer les autres pages, on devra ajouter le paramètre <code>page</code> au dictionnaire <code>params</code> qu'on a créé au début avant d'envoyer la requête, puis refaire le même traitement.</p>
 <pre><code class='language-python'>params = {'filters': 'tid:31 tid:58', 'page': 1}</code></pre>
+            <h2>Exploration du site rekrute.com <a href='#rekrute_com' name='rekrute_com'>&para;</a></h2>
+            <p>Pour le site rekrute.com, la requête de recherche est de type POST, qu'on devra envoyer à l'url <code>http://www.rekrute.com/offres-recherche-avancee.html</code>. On doit passer quelques paramètres à la requête POST, les plus importants sont <code>jobOffer_Position[]</code> où on précise le métier recherché, ainsi que <code>jobOffer_Region[]</code> qui représente la région.</p>
+            <pre><code class='language-python'>url = 'http://www.rekrute.com/offres-recherche-avancee.html'
+# 13 représente l'Informatique
+# 4 représente la région de Casablanca
+post_data = {'_STATE_': '', '__EVENTARGUMENT': '', '__EVENTTARGET': 'search', 'jobOffer_Sector_2': '', 'jobOffer_Position[]': '13', 'jobOffer_Region[]': '4', 'searchquery': ''} 
+r = requests.post(url, data = post_data)</code></pre>
+            <p>La page où on est envoyé est une simple page HTML qui contient un code javascript pour faire la redirection vers la page de résultats. Ce type de redirections n'est pas géré automatiquement. On devra donc extraire le lien de redirection depuis le code Javascript, puis faire une nouvelle requête GET.</p>
+            <pre><code class='language-python'>content = r.text
+url_match = re.match("&lt;script>document.location='(.*?)';&lt;/script>", content)
+url_redirect = url_match.group(1)</code></pre>
+            <p>Il nous faudra aussi récupérer les cookies depuis la réponse, pour ensuite les renvoyer avec la nouvelle requête. On doit faire ceci parce que les paramètres de recherche sont stockés dans les cookies après la redirection.</p>
+            <pre><code class='language-python'>old_cookies = r.cookies
+r = requests.get('http://www.rekrute.com/'+url_redirect, cookies = old_cookies)</code></pre>
+            <p>On crée un objet BeautifulSoup en lui pasant le texte de la réponse.</p>
+            <pre><code class='language-python'>html = bs4(r.text, 'html.parser')</code></pre>
+            <p>Les informations qu'on veut (date, titre, recruteur) sont dans des élément <code>td</code>. Le parent <code>tr</code> n'au aucun identifiant, que ça soit un id ou class. Sa seule particularité et qu'il a l'attribut <code>height</code> égale à 32. On va donc utiliser ceci pour récupérer les éléments tr qui contiennent les infos des annonces.</p>
+<pre><code class='language-python'>tr_annonces = html.find_all('tr', attrs={'height': '32'})</code></pre>
+<p>Puis on boucle sur les annonces récupérées.</p>
+<pre><code class='language-python'>for tr in tr_annonces:
+    date_annonce = ''
+    titre_annonce = ''
+    recruteur = ''
+    #on récupère les colonnes "td" de la ligne
+    tds = tr.find_all('td')
+    for td in tds:
+        # le td qui contient la date et le titre de l'annonce contient un tableau,
+        # on teste donc si le td contient un tableau
+        if len(td.contents) > 0 and td.contents[0].name == 'table':
+            table = td.contents[0]
+            # le tableau contient un seule ligne,
+            # on récupère donc les td de cette ligne
+            colonnes = table.find('tr').find_all('td')
+            # la deuxième colonne contient la date, et la troisième contient
+            # le lien de l'annonce
+            date_annonce = colonnes[1].string
+            titre_annonce = colonnes[2].find('a').string
+        elif len(td.contents) > 0 and td.contents[0].name == 'a':
+            # le td qui contient le lien vers le recruteur a un élément "a" comme descendant,
+            # on va extraire le nom  du recruteur depuis l'attribut title, puisqu'il
+            # n'est cité nulle part d'autre
+            match = re.match(r'Voir toutes les offres de (.*?)$', td.contents[0]['title'])
+            if match:
+                recruteur = match.group(1)
+    print(date_annonce, titre_annonce + " / " + recruteur)</code></pre>
           </div>
         </article>
       </main>
