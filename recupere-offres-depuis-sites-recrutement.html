@@ -53,7 +53,41 @@ pip3 install beautifulsoup4</code></pre>
 params = {'filters': 'tid:31 tid:58'}
 emploi_ma_url = 'http://www.emploi.ma/recherche-jobs-maroc'
 r = requests.get(emploi_ma_url, params=params)</code></pre>
-            <p>Le contenu HTML retourné est disponible dans la propriété text de la réponse <code>r</code> retourné.</p>
+            <p>Le contenu HTML retourné est disponible dans la propriété <code>text</code> de la réponse <code>r</code> retourné.</p>
+            <p>Maintenant qu'on récupéré le contenu HTML, on va faire appel au module beautifulsoup pour parcourir le contenu retourné, et extraire les données.</p>
+            <p>D'abord, on importe le module puis on crée un objet <code>BeautifulSoup</code>, en lui passant le code HTML, ainsi que le type de parseur qu'on veut utiliser.</p>
+            <pre><code class='language-python'>from bs4 import BeautifulSoup as bs4
+html = bs4(r.text, 'html.parser')</code></pre>
+            <p>Après examination du code de la page de recherche, on remarque que les div qui contiennent les annonces ont les classes "<code>emasearch-result</code>" et "<code>job-search-result</code>", on passe donc ce sélecteur à la méthode <code class='language-python'>BeautifulSoup.select()</code> qui nous retource les éléments qui correspondent au sélecteur spécifié.</p>
+            <pre><code class='language-python'>annonces = html.select('.emasearch-result.job-search-result')</code></pre>
+<p>Après, on va boucler sur les éléments div récupérés, puis extraire la date, titre, lien de l'annonce, ainsi que le nom du recruteur</p>
+          <pre><code class='language-python'>for annonce in annonces:
+    date = annonce.find('div', class_='date search-date').string
+    print(date)
+    lien_annonce = annonce.find('h3', class_='title search-title').contents[1]
+    titre = lien_annonce.string.strip()
+    href = lien_annonce['href']
+    print(titre, href)
+    recruteur = annonce.find('h4', class_='recruiter-name').contents[0].string
+    print(recruteur.strip())</code></pre>
+            <br>
+            <p>Explorons le code ligne par ligne.</p>
+            <pre><code class='language-python'>date = annonce.find('div', class_='date search-date').string</code></pre>
+            <p>Pour chaque annonce de la boucle, on recherche un élément <code>div</code> qui a l'attribut <code>class</code> égale à '<code>date search-date</code>'. Puis on récupère la propriété <code>string</code> de l'élément retourné, celle-ci contient le texte qui est à l'intérieur de l'élément <code>div</code>.</p>
+            <pre><code class="language-python">print(date)</code></pre>
+            <p>Et on affiche la date récupéré.</p>
+            <pre><code class="language-python">lien_annonce = annonce.find('h3', class_='title search-title').contents[1]</code></pre>
+            <p>On va maintenant récupérer le titre de l'annonce, ainsi que le lien pour la page des détails. Le titre de l'annonce est un élément <code>a</code>, qui est un descendant d'un autre élément <code>h3</code>, qui a l'attribut <code>class</code> égale à "<code>title search-title</code>". La propriété <code>contents</code> est une liste des enfants de l'élément <code>h3</code>. Le premier élément (index 0) est un retour à la ligne, l'élément <code>a</code> qui nous intéresse est le deuxième dans la liste.</p>
+            <pre><code class='language-python'>titre = lien_annonce.string.strip()</code></pre>
+            <p>On récupère le texte du lien qui est le titre de l'annonce.</p>
+            <pre><code class='language-python'>href = lien_annonce['href']
+print(titre, href)</code></pre>
+            <p>Puis on récupère le lien de l'annonce. On peut récupérer la valeur d'un attribut en traitant l'élément comme un dictionnaire et en lui passant le nom de l'attribut. On récupère donc le lien depuis l'attribut <code>href</code>.</p>
+            <pre><code class="language-python">recruteur = annonce.find('h4', class_='recruiter-name').contents[0].string
+print(recruteur.strip())</code></pre>
+<p>Même principe pour le nom du recruteur, on change juste le nom de l'élément, qui est dans ce cas un <code>h4</code>, et l'attribut <code>class</code> qui a la valeur "<code>recruiter-name</code>".</p>
+          <p>Les résultats qu'on a récupéré sont ceux de la première page, pour récupérer les autres pages, on devra ajouter le paramètre <code>page</code> au dictionnaire <code>params</code> qu'on a créé au début avant d'envoyer la requête.</p>
+<pre><code class='language-python'>params = {'filters': 'tid:31 tid:58', 'page': 1}</code></pre>
           </div>
         </article>
       </main>
