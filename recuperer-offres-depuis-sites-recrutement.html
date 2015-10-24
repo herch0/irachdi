@@ -23,7 +23,7 @@
           <header class="page-header">
             <h1>
               <span itemprop="name">Récupérer les offres d'emploi depuis les sites de recrutement</span>
-              <time itemprop="datePublished" class="post_date" datetime="2015-10-11T20:18">11 Octobre 2015</time>
+              <time itemprop="datePublished" class="post_date" datetime="2015-10-24T01:00">24 Octobre 2015</time>
             </h1>
           </header>
           <div itemprop="articleBody" class="post_body">
@@ -133,6 +133,11 @@ r = requests.get('http://www.rekrute.com/'+url_redirect, cookies = old_cookies)<
             if match:
                 recruteur = match.group(1)
     print(date_annonce, titre_annonce + " / " + recruteur)</code></pre>
+
+            <h2>Exemple fonctionnel <a href='#exemple' name='exemple'>&para;</a></h2>
+            <p>Vous pouvez récupérer un code exemple qui affiche les annonces d'aujourd'hui depuis les deux sites. Si vous avez git installé, vous pouvez juste cloner le dépôt </p>
+            <pre><code class="language-bash">git clone https://github.com/herch0/marocjobs.git</code></pre>
+            <p>sinon vous pouvez récupérer directement <a href="https://github.com/herch0/marocjobs/blob/master/get_jobs.py">le code source</a>.</p>
           </div>
         </article>
       </main>
