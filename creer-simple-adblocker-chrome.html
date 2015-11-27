@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8"/>
+    <link rel='icon' href='data:;base64,iVBORw0KGgo='>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un simple ad-blocker pour chrome</title>
+    <link href="css/prism.css" rel="stylesheet">
+    <link href="css/styles.css?v=3" rel="stylesheet">
+    <link href="css/font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="header_top">
+      <h1 class="div_row"><a href="index.html">I. RACHDI</a> 
+        <span class="header_social_links">
+          <a href="https://twitter.com/IssamRachdi" title="Twitter @IssamRachdi"><i class="fa fa-twitter"></i></a>
+          <a href="https://github.com/herch0" title="Github"><i class="fa fa-github"></i></a>
+        </span>
+      </h1>
+    </header>
+    <div class="container">
+      <main>
+        <article class="article_post" itemscope itemtype="http://schema.org/BlogPosting">
+          <header class="page-header">
+            <h1>
+              <span itemprop="name">Créer un simple ad-blocker pour chrome</span>
+              <time itemprop="datePublished" class="post_date" datetime="2015-10-11T20:18">11 Octobre 2015</time>
+            </h1>
+          </header>
+          <p>Dans cet article, on va essayer de créer une extension chrome qui servira comme un bloqueur de publicités (adblocker). Bien sûr, il ne faut s'attendre à avoir les même fonctionalités et perfomances que les adblocker existants (uBlock Origin, Adblock Plus, etc). Mais ce sera un bon moyen de savoir comment créer une extension chrome, et comprendre un peu comment un adblocker marche.</p>
+          <p>Commençons d'abord par créer le squelette de notre extension. On créera d'abord me dossier qui contiendra nos fichiers</p>
+          <pre><code class="language-bash">mkdir myadblocker</code></pre>
+          <p>A l'intérieur du dossier <code>myadblocker</code>, on créera le fichier <code>manifest.json</code>. Ce fichier est obligatoire pour toute extension, puisqu'il contient toutes les informations sur l'extension, tels que son nom, les (scripts, images ...) utilisés, les permissions requises, etc.</p>
+          <pre><code class="language-javascript">{
+  //Cette propriété est obligatoire est doit être égale à 2
+  "manifest_version": 2,
+  //Came représente le nom de notre extension. C'est le nom qui sera affiché dans la page des extensions
+  "name": "Super simple adblocker",
+  //Une description de notre extension
+  "description": "Un simple bloqueur de publicité pour chrome",
+  //La version de l'extension
+  "version": "0.1"
+}</code></pre>
+          <p>On a maintenant une extension fonctionnelle qu'on peut installer, mais qui ne fait rien pour l'instant. On va quand même l'installer pour voir les étapes d'installation.</p>
+          <p>On va d'abord à la page des extensions <code>chrome://extensions/</code>, puis on coche la case mode développeur
+          </p>
+          <figure>
+            <img src="img/developer-mode.png" alt='Mode développeur'>
+            <figcaption>Mode développeur</figcaption>
+          </figure>
+          <p>Pour charger notre extension, on clique sur le bouton "Load unpacked extension", qui nous donne la possibilité de charger l'extension depuis notre dossier de développement.</p>
+          <figure>
+            <img src="img/charger-extension.png" alt='Bouton charger extension'>
+            <figcaption>Bouton charger extension</figcaption>
+          </figure>
+          <p>On va maintenant spécifier l'icone de notre extension. Pour cela, on devra ajouter la propriété <code>icons</code> au fichier <code>manifest.json</code>. Cette propriété a la forme suivante: </p>
+          <pre class='language-javascript'><code>"icons": {
+  "16": "icon16.png",
+  "48": "icon48.png"
+}</code></pre>
+          <p>Notre fichier manifest se présentera comme suit</p>
+          <pre><code class="language-javascript">{
+  "manifest_version": 2,  
+  "name": "Super simple adblocker",
+  "description": "Un simple bloqueur de publicité pour chrome",
+  "version": "0.1",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png"
+  }
+}</code></pre>
+        </article>
+      </main>
+      <section class="comments_section">
+        <div id="list_comments"></div>
+        <form id="form_comment" action="comments-ajx.php" method="POST" onsubmit="ajouter_comment(event)">
+          <input type="hidden" id="req_action" name="req_action" value="ADD_COMMENT">
+          <div class="div_col">
+            <div class="div_row">
+              <input type="text" id="name" name="name" placeholder="Nom">
+              <input type="email" id="email" name="email" placeholder="Email">
+            </div>
+            <div class="div_row">
+              <textarea id="commentaire" name="commentaire" placeholder="Commentaire" rows="6"></textarea>
+            </div>
+            <button class="btn btn-default block" id="add_comment">Ajouter commentaire</button>
+          </div>
+        </form>
+      </section>
+      <div class="clearfix"></div>
+    </div>
+    <script src="js/prism.js"></script>
+    <script src="js/comment.js?v=2"></script>
+  </body>
+</html>
