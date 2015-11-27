@@ -897,8 +897,16 @@ figure {
   display: inline-block;
 }
 
+figure img {
+  padding: 5px;
+}
+
 figcaption {
-  text-align: center
+  text-align: center;
+  padding: 5px;
+  color: #7D7878;
+  font-size: .8rem;
+  font-weight: bold;
 }
 
 .comments_section {
