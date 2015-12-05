@@ -27,8 +27,9 @@
               <time itemprop="datePublished" class="post_date" datetime="2015-10-11T20:18">11 Octobre 2015</time>
             </h1>
           </header>
-          <p>Dans cet article, on va essayer de créer une extension chrome qui servira comme un bloqueur de publicités (adblocker). Bien sûr, il ne faut s'attendre à avoir les même fonctionalités et perfomances que les adblocker existants (uBlock Origin, Adblock Plus, etc). Mais ce sera un bon moyen de savoir comment créer une extension chrome, et comprendre un peu comment un adblocker marche.</p>
-          <p>Commençons d'abord par créer le squelette de notre extension. On créera d'abord me dossier qui contiendra nos fichiers</p>
+          <p>Dans cet article, on va essayer de créer une extension chrome qui servira comme un bloqueur de publicités (adblocker). Bien sûr, il ne faut  pas s'attendre à avoir les même fonctionalités et perfomances que les adblocker existants (uBlock Origin, Adblock Plus, etc). Mais ce sera un bon moyen de savoir comment créer une extension chrome, et comprendre un peu comment un adblocker marche.</p>
+          <h2>Créer le squelette de l'extension <a href="#squelette" name='squelette'>&para;</a></h2>
+          <p>Commençons d'abord par créer le squelette de notre extension. On créera d'abord le dossier qui contiendra nos fichiers</p>
           <pre><code class="language-bash">mkdir myadblocker</code></pre>
           <p>A l'intérieur du dossier <code>myadblocker</code>, on créera le fichier <code>manifest.json</code>. Ce fichier est obligatoire pour toute extension, puisqu'il contient toutes les informations sur l'extension, tels que son nom, les (scripts, images ...) utilisés, les permissions requises, etc.</p>
           <pre><code class="language-javascript">{
@@ -58,7 +59,7 @@
   "16": "icon16.png",
   "48": "icon48.png"
 }</code></pre>
-          <p>Notre fichier manifest se présentera comme suit</p>
+          <p>Notre fichier manifest se présentera donc comme suit</p>
           <pre><code class="language-javascript">{
   "manifest_version": 2,  
   "name": "Super simple adblocker",
@@ -69,6 +70,25 @@
     "48": "icon48.png"
   }
 }</code></pre>
+          <p>Et si on recharge la page, on verra notre extension avec l'icone spécifié.</p>
+          <figure>
+            <img src="img/extension_icone.png" alt='Mode développeur'>
+            <figcaption>Icone de l'extension</figcaption>
+          </figure>
+          <h2>Event page <a href="#eventpage" name='eventpage'>&para;</a></h2>
+          <p>Maintenant que chrome reconnaît notre extension, il est temps d'y ajouter un peu de logique.</p>
+          <p>Quand on veut que notre extension exécute des instructions en arrière plan, on utilise les <em><a href="https://developer.chrome.com/extensions/event_pages">Event pages</a></em>, appelée aussi <em>Background page</em>. On créera donc notre event page. On créera un fichier <code>eventPage.js</code> dans le dossier de l'extension, puis on le déclarera dans le fichier <code>manifest.json</code> </p>
+          <pre><code class='language-javascript'>{
+  "name": "Super simple adblocker",
+  ...
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  },
+  ...
+}</code></pre>
+          <p>La propriété persistent égale à false signifie que le script ne sera chargé que quand c'est nécessaire, par exemple un événement qu'on écoute est lancé ...</p>
+          
         </article>
       </main>
       <section class="comments_section">
