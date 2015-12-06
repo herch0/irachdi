@@ -895,10 +895,12 @@ figure {
   border-radius: 5px;
   width: auto;
   display: inline-block;
+  /*max-width: 900px;*/
 }
 
 figure img {
   padding: 5px;
+  max-width: 860px;
 }
 
 figcaption {
@@ -938,7 +940,7 @@ figcaption {
   margin-bottom: 30px;
 }
 
-.comment {
+.comments_section .comment {
   margin-bottom: 8px;
   background-color: #E5E9F3;
   background: linear-gradient(to right, #E5E9F3, #fff);

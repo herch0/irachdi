@@ -75,20 +75,116 @@
             <img src="img/extension_icone.png" alt='Mode développeur'>
             <figcaption>Icone de l'extension</figcaption>
           </figure>
-          <h2>Event page <a href="#eventpage" name='eventpage'>&para;</a></h2>
+          <h2>Background page <a href="#eventpage" name='eventpage'>&para;</a></h2>
           <p>Maintenant que chrome reconnaît notre extension, il est temps d'y ajouter un peu de logique.</p>
-          <p>Quand on veut que notre extension exécute des instructions en arrière plan, on utilise les <em><a href="https://developer.chrome.com/extensions/event_pages">Event pages</a></em>, appelée aussi <em>Background page</em>. On créera donc notre event page. On créera un fichier <code>eventPage.js</code> dans le dossier de l'extension, puis on le déclarera dans le fichier <code>manifest.json</code> </p>
+          <p>Quand on veut que notre extension exécute des instructions en arrière plan, on utilise les <em><a href="https://developer.chrome.com/extensions/background_pages">Background pages</a></em>. On créera donc un fichier <code>background.js</code> dans le dossier de l'extension, puis on le déclarera dans le fichier <code>manifest.json</code> </p>
           <pre><code class='language-javascript'>{
   "name": "Super simple adblocker",
   ...
   "background": {
-    "scripts": ["eventPage.js"],
-    "persistent": false
+    "scripts": ["background.js"]
   },
   ...
 }</code></pre>
-          <p>La propriété persistent égale à false signifie que le script ne sera chargé que quand c'est nécessaire, par exemple un événement qu'on écoute est lancé ...</p>
+          <p>Dans notre <em>bacground page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée.</p>
+          <p>Avant d'utiliser l'api <code>webRequest</code>, il faudra la déclarer dans le fichier <code>manifest.json</code>, ainsi que les adresses auquelles on veut accéder. Puisqu'on ne sait pas à l'avance les adresses qui seront demandés, on donnera la valeur "<code>*://*/*</code>" qui signifie simplement n'importe quelle adresse; le premier asterisk désigne le protocole, le deuxième signifie l'hôte, et le troisième le chemin. Si on veut bloquer des requêtes, il nous faudra aussi déclarer la permission <code>webRequestBlocking</code>.</p>
+          <pre><code class='language-javascript'>{
+  "name": "Super simple adblocker",
+  ...
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "*://*/*"
+  ],
+  ...
+}</code></pre>
+          <h2>Ecouter le traffic web <a href="#ecoutetraffic" name='ecoutetraffic'>&para;</a></h2>
+          <p>On va maintenant essayer d'attraper toutes les requêtes web faites par les pages. Pour cela, on va écouter l'évènement <code>onBeforeRequest</code>, qui est lancé avant que la requête soit exécutée. Cela nous permettra d'annuler les requêtes qui ne nous conviennent pas.</p>
+          <p>Dans un premier temps, on va juste afficher dans la console les requêtes lancées. Pour cela, an va ajouter les lignes suivantes dans le fichier <code>background.js</code>.</p>
+          <pre><code class="language-javascript">var callback = function(details) {
+  //la variable details contient les détails de la requête, 
+  //tel que l'url, les en-têtes, etc.
+  console.log(details.url);
+};
+//filter contiendra les url qu'on veut traiter,
+//puisqu'on veut raiter toutes les urls, on spécifie la valeur "&lt;all_urls&gt;"
+var filter = {urls: ["&lt;all_urls&gt;"]};
+//on ajoute l'option "blocking", qui indique que la requête 
+//sera bloqué tant que la fonction callback n'a pas retourné,
+//ceci nous permets d'annuler ou rediriger la requête
+var options = ["blocking"];
+chrome.webRequest.onBeforeRequest.addListener(callback, filter, options)</code></pre>
+          <p>Après avoir enregistré le fichier, on recharge l'extension, et on ouvre la console du script <code>background.js</code>, car le résultat de la fonction <code>console.log</code> ne sera pas affiché dans la console du navigateur, mais dans celle de l'extension.</p>
+          <figure>
+            <img src="img/background_console.png" alt="Recharger l'extension">
+            <figcaption>Recharger l'extension et afficher la console</figcaption>
+          </figure>
+          <p>Et voici ce qu'on verra dans la console si on ouvre le site<em> www.developpez.com</em> par exemple.</p>
+          <figure>
+            <img src="img/log_requetes.png" alt="Log des requêtes">
+            <figcaption>Log des requêtes</figcaption>
+          </figure>
+          <h2>Bloquer les publicités <a href="#bloquerpub" name='bloquerpub'>&para;</a></h2>
+          <p>Pour bloquer une des requêtes qu'on voit, on devra retourner un objet avec la propriéré <code>cancel</code> égale à true dans la fonction <code>callback</code>.</p>
+          <p>Si on reste dans l'exemple du site<em> www.developpez.com</em>, on remarquera que les publicités ont le format suivant: "<em>http://altsysimg.developpez.com/....</em>", ou "<em>http://www.developpez.com/template/offres.php?...</em>" pour les offres d'emploi. On va donc vérifier pour chaque requête si l'url contient une ces chaines de caractères, et si c'est le cas, on la bloque.</p>
           
+          <pre><code class='language-javascript'>var callback = function(details) {
+  if (details.url.indexOf('altsysimg.developpez.com') != -1 ||
+        details.url.indexOf('www.developpez.com/template/offres.php')) {
+    console.log(details.url + ' bloqué');
+    return { cancel: true };
+  }
+};
+</code></pre>
+          <p>Si on recharge l'extension, et qu'on se rende su le site <em>developpez.com</em>, on aura un résultat semblable à l'image. (Remarquez l'espace vide à l'intérieur des cadres noirs).</p>
+          <figure>
+            <img src="img/apres_extension.png" alt="Résultat après">
+            <figcaption>Après activation de l'extension</figcaption>
+          </figure>
+          <h2>Rediriger au lieu d'annuler <a href="#rediriger" name='rediriger'>&para;</a></h2>
+          <p>Au lieu d'annuler la requête, on pourrait la rediriger vers une page de notre choix, par exemple une page interne de l'extension. Dans notre cas, on va utiliser une page vide, ce qui aura aussi pour effet de faire disparaître le visage triste.</p>
+          <p>On créera d'abord une page html vide <code>vide.html</code> qu'on mettra dans le dossier de l'extension. Cette page ne contiendra rien du tout.</p>
+          <p>Puis dans notre fichier <code>background.js</code>, on modifiera la fonction callback comme suit:</p>
+          <pre><code class='language-javascript'>var callback = function(details) {
+  if (details.url.indexOf('altsysimg.developpez.com') != -1 ||
+        details.url.indexOf('www.developpez.com/template/offres.php') != -1) {
+    console.log(details.url + ' bloqué');
+    //on remplace l'attribut cancel par redirectUrl, et on lui passe 
+    //notre page vide
+    return { redirectUrl: chrome.runtime.getURL('vide.html') };
+  }
+};</code></pre>
+          <p>On a remplacé l'attribut <code>cancel</code> par <code>redirectUrl</code> qui représente l'url vers laquelle on veut rediriger la requête. <code>chrome.runtime.getURL</code> sert à convertir le chemin relatif dans l'extension à un chemin absolu.</p>
+          <p>Il faudra aussi déclarer la page <code>vide.html</code> dans le fichier <code>manifest.json</code> comme une ressource accessible depuis les pages web.</p>
+          <pre><code class='language-javascript'>{
+  "name": "Super simple adblocker",
+  ...
+  "web_accessible_resources": ["vide.html"],
+  ...
+}</code></pre>
+          
+          <h2>Dernières touches <a href="#dernierestouches" name='dernierestouches'>&para;</a></h2>
+          <p>Pour finir, on va juste mettre les adresses qu'on veut bloquer dans un tableau, pour ne pas avoir une longue liste de if dans notre code.</p>
+          <pre><code class='language-javascript'>var a_bloquer = [
+  'altsysimg.developpez.com', 
+  'www.developpez.com/template/offres.php',
+  'googlesyndication.com',
+  'adclick.g.doubleclick.net'
+];
+
+var callback = function(details) {
+  var redirect = a_bloquer.some(function(element) {
+    return (details.url.indexOf(element) != -1);
+  });
+  if (redirect) { 
+    return { redirectUrl: chrome.runtime.getURL('vide.html') };
+  }
+};</code></pre>
+          <hr>
+          <p>Et voilà, on a un petit bloqueur de pub ultra simple, qui a encore beaucoup de chemins à faire pour prétendre être un vrai adblocker.</p>
+          <p>Vous pouvez récupérer les fichiers sources depuis github en clonant de dépôt </p>
+          <pre><code class='language-bash'>git clone https://github.com/herch0/simple-chrome-adblocker</code></pre>
+          <p>ou en <a href="https://github.com/herch0/simple-chrome-adblocker/archive/master.zip">téléchargeant un fichier zip</a>.</p>
         </article>
       </main>
       <section class="comments_section">
