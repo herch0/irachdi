@@ -24,7 +24,7 @@
           <header class="page-header">
             <h1>
               <span itemprop="name">Créer un simple ad-blocker pour chrome</span>
-              <time itemprop="datePublished" class="post_date" datetime="2015-10-11T20:18">11 Octobre 2015</time>
+              <time itemprop="datePublished" class="post_date" datetime="2015-12-06T21:20">06 Décembre 2015</time>
             </h1>
           </header>
           <p>Dans cet article, on va essayer de créer une extension chrome qui servira comme un bloqueur de publicités (adblocker). Bien sûr, il ne faut  pas s'attendre à avoir les même fonctionalités et perfomances que les adblocker existants (uBlock Origin, Adblock Plus, etc). Mais ce sera un bon moyen de savoir comment créer une extension chrome, et comprendre un peu comment un adblocker marche.</p>
@@ -86,8 +86,8 @@
   },
   ...
 }</code></pre>
-          <p>Dans notre <em>bacground page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée.</p>
-          <p>Avant d'utiliser l'api <code>webRequest</code>, il faudra la déclarer dans le fichier <code>manifest.json</code>, ainsi que les adresses auquelles on veut accéder. Puisqu'on ne sait pas à l'avance les adresses qui seront demandés, on donnera la valeur "<code>*://*/*</code>" qui signifie simplement n'importe quelle adresse; le premier asterisk désigne le protocole, le deuxième signifie l'hôte, et le troisième le chemin. Si on veut bloquer des requêtes, il nous faudra aussi déclarer la permission <code>webRequestBlocking</code>.</p>
+          <p>Dans notre <em>background page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée. Ceci est possible grâce à <code>webRequest</code>.</p>
+          <p>Avant d'utiliser l'API <code>webRequest</code>, il faudra la déclarer dans le fichier <code>manifest.json</code>, ainsi que les adresses auquelles on veut accéder. Puisqu'on ne sait pas à l'avance les adresses qui seront demandés, on donnera la valeur "<code>*://*/*</code>" qui signifie simplement n'importe quelle adresse; le premier asterisk désigne le protocole, le deuxième signifie l'hôte, et le troisième le chemin. Si on veut bloquer des requêtes, il nous faudra aussi déclarer la permission <code>webRequestBlocking</code>.</p>
           <pre><code class='language-javascript'>{
   "name": "Super simple adblocker",
   ...
@@ -130,7 +130,7 @@ chrome.webRequest.onBeforeRequest.addListener(callback, filter, options)</code><
           
           <pre><code class='language-javascript'>var callback = function(details) {
   if (details.url.indexOf('altsysimg.developpez.com') != -1 ||
-        details.url.indexOf('www.developpez.com/template/offres.php')) {
+        details.url.indexOf('www.developpez.com/template/offres.php') != -1) {
     console.log(details.url + ' bloqué');
     return { cancel: true };
   }
@@ -164,7 +164,7 @@ chrome.webRequest.onBeforeRequest.addListener(callback, filter, options)</code><
 }</code></pre>
           
           <h2>Dernières touches <a href="#dernierestouches" name='dernierestouches'>&para;</a></h2>
-          <p>Pour finir, on va juste mettre les adresses qu'on veut bloquer dans un tableau, pour ne pas avoir une longue liste de if dans notre code.</p>
+          <p>Pour finir, on va juste mettre les adresses qu'on veut bloquer dans un tableau, pour ne pas avoir une longue liste de <code>if</code> dans notre code.</p>
           <pre><code class='language-javascript'>var a_bloquer = [
   'altsysimg.developpez.com', 
   'www.developpez.com/template/offres.php',
