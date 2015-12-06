@@ -27,12 +27,23 @@
               <time itemprop="datePublished" class="post_date" datetime="2015-12-06T21:20">06 Décembre 2015</time>
             </h1>
           </header>
-          <p>Dans cet article, on va essayer de créer une extension chrome qui servira comme un bloqueur de publicités (adblocker). Bien sûr, il ne faut  pas s'attendre à avoir les même fonctionalités et perfomances que les adblocker existants (uBlock Origin, Adblock Plus, etc). Mais ce sera un bon moyen de savoir comment créer une extension chrome, et comprendre un peu comment un adblocker marche.</p>
-          <h2>Créer le squelette de l'extension <a href="#squelette" name='squelette'>&para;</a></h2>
-          <p>Commençons d'abord par créer le squelette de notre extension. On créera d'abord le dossier qui contiendra nos fichiers</p>
-          <pre><code class="language-bash">mkdir myadblocker</code></pre>
-          <p>A l'intérieur du dossier <code>myadblocker</code>, on créera le fichier <code>manifest.json</code>. Ce fichier est obligatoire pour toute extension, puisqu'il contient toutes les informations sur l'extension, tels que son nom, les (scripts, images ...) utilisés, les permissions requises, etc.</p>
-          <pre><code class="language-javascript">{
+          <div itemprop="articleBody" class="post_body">
+            <nav class="menu_interne float-right">
+              <ul>
+                <li><a href="#squelette">Créer le squelette de l'extension</a></li>
+                <li><a href="#backgroundpage">Background page</a></li>
+                <li><a href="#ecoutetraffic">Ecouter le traffic web</a></li>
+                <li><a href="#bloquerpub">Bloquer les publicités</a></li>
+                <li><a href="#rediriger">Rediriger au lieu d'annuler </a></li>
+                <li><a href="#dernierestouches">Dernières touches</a></li>
+              </ul>
+            </nav>
+            <p>Dans cet article, on va essayer de créer une extension chrome qui servira comme un bloqueur de publicités (adblocker). Bien sûr, il ne faut  pas s'attendre à avoir les même fonctionalités et perfomances que les adblocker existants (uBlock Origin, Adblock Plus, etc). Mais ce sera un bon moyen de savoir comment créer une extension chrome, et comprendre un peu comment un adblocker marche.</p>
+            <h2>Créer le squelette de l'extension <a href="#squelette" name='squelette'>&para;</a></h2>
+            <p>Commençons d'abord par créer le squelette de notre extension. On créera d'abord le dossier qui contiendra nos fichiers</p>
+            <pre><code class="language-bash">mkdir myadblocker</code></pre>
+            <p>A l'intérieur du dossier <code>myadblocker</code>, on créera le fichier <code>manifest.json</code>. Ce fichier est obligatoire pour toute extension, puisqu'il contient toutes les informations sur l'extension, tels que son nom, les (scripts, images ...) utilisés, les permissions requises, etc.</p>
+            <pre><code class="language-javascript">{
   //Cette propriété est obligatoire est doit être égale à 2
   "manifest_version": 2,
   //Came représente le nom de notre extension. C'est le nom qui sera affiché dans la page des extensions
@@ -42,25 +53,25 @@
   //La version de l'extension
   "version": "0.1"
 }</code></pre>
-          <p>On a maintenant une extension fonctionnelle qu'on peut installer, mais qui ne fait rien pour l'instant. On va quand même l'installer pour voir les étapes d'installation.</p>
-          <p>On va d'abord à la page des extensions <code>chrome://extensions/</code>, puis on coche la case mode développeur
-          </p>
-          <figure>
-            <img src="img/developer-mode.png" alt='Mode développeur'>
-            <figcaption>Mode développeur</figcaption>
-          </figure>
-          <p>Pour charger notre extension, on clique sur le bouton "Load unpacked extension", qui nous donne la possibilité de charger l'extension depuis notre dossier de développement.</p>
-          <figure>
-            <img src="img/charger-extension.png" alt='Bouton charger extension'>
-            <figcaption>Bouton charger extension</figcaption>
-          </figure>
-          <p>On va maintenant spécifier l'icone de notre extension. Pour cela, on devra ajouter la propriété <code>icons</code> au fichier <code>manifest.json</code>. Cette propriété a la forme suivante: </p>
-          <pre class='language-javascript'><code>"icons": {
+            <p>On a maintenant une extension fonctionnelle qu'on peut installer, mais qui ne fait rien pour l'instant. On va quand même l'installer pour voir les étapes d'installation.</p>
+            <p>On va d'abord à la page des extensions <code>chrome://extensions/</code>, puis on coche la case mode développeur
+            </p>
+            <figure>
+              <img src="img/developer-mode.png" alt='Mode développeur'>
+              <figcaption>Mode développeur</figcaption>
+            </figure>
+            <p>Pour charger notre extension, on clique sur le bouton "Load unpacked extension", qui nous donne la possibilité de charger l'extension depuis notre dossier de développement.</p>
+            <figure>
+              <img src="img/charger-extension.png" alt='Bouton charger extension'>
+              <figcaption>Bouton charger extension</figcaption>
+            </figure>
+            <p>On va maintenant spécifier l'icone de notre extension. Pour cela, on devra ajouter la propriété <code>icons</code> au fichier <code>manifest.json</code>. Cette propriété a la forme suivante: </p>
+            <pre class='language-javascript'><code>"icons": {
   "16": "icon16.png",
   "48": "icon48.png"
 }</code></pre>
-          <p>Notre fichier manifest se présentera donc comme suit</p>
-          <pre><code class="language-javascript">{
+            <p>Notre fichier manifest se présentera donc comme suit</p>
+            <pre><code class="language-javascript">{
   "manifest_version": 2,  
   "name": "Super simple adblocker",
   "description": "Un simple bloqueur de publicité pour chrome",
@@ -70,15 +81,15 @@
     "48": "icon48.png"
   }
 }</code></pre>
-          <p>Et si on recharge la page, on verra notre extension avec l'icone spécifié.</p>
-          <figure>
-            <img src="img/extension_icone.png" alt='Mode développeur'>
-            <figcaption>Icone de l'extension</figcaption>
-          </figure>
-          <h2>Background page <a href="#eventpage" name='eventpage'>&para;</a></h2>
-          <p>Maintenant que chrome reconnaît notre extension, il est temps d'y ajouter un peu de logique.</p>
-          <p>Quand on veut que notre extension exécute des instructions en arrière plan, on utilise les <em><a href="https://developer.chrome.com/extensions/background_pages">Background pages</a></em>. On créera donc un fichier <code>background.js</code> dans le dossier de l'extension, puis on le déclarera dans le fichier <code>manifest.json</code> </p>
-          <pre><code class='language-javascript'>{
+            <p>Et si on recharge la page, on verra notre extension avec l'icone spécifié.</p>
+            <figure>
+              <img src="img/extension_icone.png" alt='Mode développeur'>
+              <figcaption>Icone de l'extension</figcaption>
+            </figure>
+            <h2>Background page <a href="#backgroundpage" name='backgroundpage'>&para;</a></h2>
+            <p>Maintenant que chrome reconnaît notre extension, il est temps d'y ajouter un peu de logique.</p>
+            <p>Quand on veut que notre extension exécute des instructions en arrière plan, on utilise les <em><a href="https://developer.chrome.com/extensions/background_pages">Background pages</a></em>. On créera donc un fichier <code>background.js</code> dans le dossier de l'extension, puis on le déclarera dans le fichier <code>manifest.json</code> </p>
+            <pre><code class='language-javascript'>{
   "name": "Super simple adblocker",
   ...
   "background": {
@@ -86,9 +97,9 @@
   },
   ...
 }</code></pre>
-          <p>Dans notre <em>background page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée. Ceci est possible grâce à <code>webRequest</code>.</p>
-          <p>Avant d'utiliser l'API <code>webRequest</code>, il faudra la déclarer dans le fichier <code>manifest.json</code>, ainsi que les adresses auquelles on veut accéder. Puisqu'on ne sait pas à l'avance les adresses qui seront demandés, on donnera la valeur "<code>*://*/*</code>" qui signifie simplement n'importe quelle adresse; le premier asterisk désigne le protocole, le deuxième signifie l'hôte, et le troisième le chemin. Si on veut bloquer des requêtes, il nous faudra aussi déclarer la permission <code>webRequestBlocking</code>.</p>
-          <pre><code class='language-javascript'>{
+            <p>Dans notre <em>background page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée. Ceci est possible grâce à <code>webRequest</code>.</p>
+            <p>Avant d'utiliser l'API <code>webRequest</code>, il faudra la déclarer dans le fichier <code>manifest.json</code>, ainsi que les adresses auquelles on veut accéder. Puisqu'on ne sait pas à l'avance les adresses qui seront demandés, on donnera la valeur "<code>*://*/*</code>" qui signifie simplement n'importe quelle adresse; le premier asterisk désigne le protocole, le deuxième signifie l'hôte, et le troisième le chemin. Si on veut bloquer des requêtes, il nous faudra aussi déclarer la permission <code>webRequestBlocking</code>.</p>
+            <pre><code class='language-javascript'>{
   "name": "Super simple adblocker",
   ...
   "permissions": [
@@ -98,10 +109,10 @@
   ],
   ...
 }</code></pre>
-          <h2>Ecouter le traffic web <a href="#ecoutetraffic" name='ecoutetraffic'>&para;</a></h2>
-          <p>On va maintenant essayer d'attraper toutes les requêtes web faites par les pages. Pour cela, on va écouter l'évènement <code>onBeforeRequest</code>, qui est lancé avant que la requête soit exécutée. Cela nous permettra d'annuler les requêtes qui ne nous conviennent pas.</p>
-          <p>Dans un premier temps, on va juste afficher dans la console les requêtes lancées. Pour cela, an va ajouter les lignes suivantes dans le fichier <code>background.js</code>.</p>
-          <pre><code class="language-javascript">var callback = function(details) {
+            <h2>Ecouter le traffic web <a href="#ecoutetraffic" name='ecoutetraffic'>&para;</a></h2>
+            <p>On va maintenant essayer d'attraper toutes les requêtes web faites par les pages. Pour cela, on va écouter l'évènement <code>onBeforeRequest</code>, qui est lancé avant que la requête soit exécutée. Cela nous permettra d'annuler les requêtes qui ne nous conviennent pas.</p>
+            <p>Dans un premier temps, on va juste afficher dans la console les requêtes lancées. Pour cela, an va ajouter les lignes suivantes dans le fichier <code>background.js</code>.</p>
+            <pre><code class="language-javascript">var callback = function(details) {
   //la variable details contient les détails de la requête, 
   //tel que l'url, les en-têtes, etc.
   console.log(details.url);
@@ -162,10 +173,10 @@ chrome.webRequest.onBeforeRequest.addListener(callback, filter, options)</code><
   "web_accessible_resources": ["vide.html"],
   ...
 }</code></pre>
-          
-          <h2>Dernières touches <a href="#dernierestouches" name='dernierestouches'>&para;</a></h2>
-          <p>Pour finir, on va juste mettre les adresses qu'on veut bloquer dans un tableau, pour ne pas avoir une longue liste de <code>if</code> dans notre code.</p>
-          <pre><code class='language-javascript'>var a_bloquer = [
+
+            <h2>Dernières touches <a href="#dernierestouches" name='dernierestouches'>&para;</a></h2>
+            <p>Pour finir, on va juste mettre les adresses qu'on veut bloquer dans un tableau, pour ne pas avoir une longue liste de <code>if</code> dans notre code.</p>
+            <pre><code class='language-javascript'>var a_bloquer = [
   'altsysimg.developpez.com', 
   'www.developpez.com/template/offres.php',
   'googlesyndication.com',
@@ -180,11 +191,13 @@ var callback = function(details) {
     return { redirectUrl: chrome.runtime.getURL('vide.html') };
   }
 };</code></pre>
+            <br>
           <hr>
           <p>Et voilà, on a un petit bloqueur de pub ultra simple, qui a encore beaucoup de chemins à faire pour prétendre être un vrai adblocker.</p>
           <p>Vous pouvez récupérer les fichiers sources depuis github en clonant de dépôt </p>
           <pre><code class='language-bash'>git clone https://github.com/herch0/simple-chrome-adblocker</code></pre>
-          <p>ou en <a href="https://github.com/herch0/simple-chrome-adblocker/archive/master.zip">téléchargeant un fichier zip</a>.</p>
+            <p>ou en <a href="https://github.com/herch0/simple-chrome-adblocker/archive/master.zip">téléchargeant un fichier zip</a>.</p>
+          </div>
         </article>
       </main>
       <section class="comments_section">
