@@ -97,7 +97,7 @@
   },
   ...
 }</code></pre>
-            <p>Dans notre <em>background page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée. Ceci est possible grâce à <code>webRequest</code>.</p>
+            <p>Dans notre <em>background page</em>, on va d'écouter le traffic web, pour voir les requêtes faites par la page web, pour ensuite bloquer ou laisser passer la ressource demandée. Ceci est possible grâce à <a href="https://developer.chrome.com/extensions/webRequest">webRequest</a>.</p>
             <p>Avant d'utiliser l'API <code>webRequest</code>, il faudra la déclarer dans le fichier <code>manifest.json</code>, ainsi que les adresses auquelles on veut accéder. Puisqu'on ne sait pas à l'avance les adresses qui seront demandés, on donnera la valeur "<code>*://*/*</code>" qui signifie simplement n'importe quelle adresse; le premier asterisk désigne le protocole, le deuxième signifie l'hôte, et le troisième le chemin. Si on veut bloquer des requêtes, il nous faudra aussi déclarer la permission <code>webRequestBlocking</code>.</p>
             <pre><code class='language-javascript'>{
   "name": "Super simple adblocker",
@@ -184,6 +184,7 @@ chrome.webRequest.onBeforeRequest.addListener(callback, filter, options)</code><
 ];
 
 var callback = function(details) {
+  //https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/some
   var redirect = a_bloquer.some(function(element) {
     return (details.url.indexOf(element) != -1);
   });
